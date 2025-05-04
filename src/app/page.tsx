@@ -1,94 +1,93 @@
-// Import the motion component from Framer Motion
 'use client';
-import { useEffect } from "react";
-import { motion } from "framer-motion"; // Correct import
-import gsap from "gsap";
+
+import {
+  FileText,
+  FileSearch,
+  Bot,
+  Image as ImageIcon,
+} from 'lucide-react';
 
 export default function Home() {
-  // useEffect(() => {
-  //   // Example of using GSAP for more complex animations
-  //   gsap.from(".card", {
-  //     opacity: 0,
-  //     y: 100,
-  //     duration: 1,
-  //     stagger: 0.3,
-  //     ease: "power4.out",
-  //     delay: 1,
-  //   });
-  // }, []);
-
   return (
-    <main className="min-h-screen bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+    <main className="bg-white min-h-screen text-neutral-900 font-sans">
       {/* Hero Section */}
-      <section className="text-center py-16 px-6">
-        <motion.h1
-          className="text-5xl font-bold leading-tight mb-4"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        >
-          🧠 Welcome to My AI Tool Suite
-        </motion.h1>
-        <motion.p
-          className="text-xl mb-8"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-        >
-          Explore powerful, AI-driven tools for a variety of tasks—from summarizing text to analyzing resumes!
-        </motion.p>
-        <motion.a
-          href="/summarizer"
-          className="inline-block px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg text-lg hover:bg-yellow-400 transition duration-300 transform hover:scale-105"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.5 }}
-        >
-          Start Exploring
-        </motion.a>
-      </section>
-
-      {/* AI Tools Cards */}
-      <section className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 py-12">
-        {/* Card 1 - Text Summarizer */}
-        <motion.div
-          className="card p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 2 }}
-        >
-          <div className="flex justify-center mb-4">
-            <img
-              src="https://img.icons8.com/ios/50/000000/summary.png"
-              alt="summarizer-icon"
-              className="w-16 h-16"
-            />
+      <section className="max-w-6xl mx-auto px-6 py-24 border-b border-neutral-300">
+        <div className="grid md:grid-cols-2 items-center gap-12">
+          <div>
+            <h1 className="text-6xl font-bold uppercase tracking-tight leading-[1.1] mb-6">
+              AI Tool Suite
+            </h1>
+            <p className="text-lg leading-relaxed text-neutral-700 max-w-prose mb-8">
+              Explore powerful, no-nonsense AI tools for summarizing text, analyzing resumes, and more. Built for clarity and function.
+            </p>
+            <a
+              href="/summarizer"
+              className="inline-block border border-black px-6 py-3 uppercase text-sm tracking-widest hover:bg-black hover:text-white transition"
+            >
+              Start Exploring
+            </a>
           </div>
-          <h3 className="text-2xl font-semibold mb-2 text-gray-800">Text Summarizer</h3>
-          <p className="text-gray-600 mb-4">
-            Paste long articles, and get concise summaries powered by OpenAI.
-          </p>
-          <a
-            href="/summarizer"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition duration-300"
-          >
-            Try Now
-          </a>
-        </motion.div>
-
-        {/* Repeat for other cards... */}
+          <div className="text-right hidden md:block">
+            <p className="text-sm uppercase tracking-wide text-neutral-500">
+              Designed with grid systems & typographic discipline
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Footer Section */}
-      <footer className="bg-gray-900 text-white py-6 text-center">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 2.5 }}
-        >
-          &copy; 2025 My AI Tool Suite. All rights reserved.
-        </motion.p>
+      {/* Tools Grid */}
+      <section className="max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+        {tools.map((tool) => (
+          <div
+            key={tool.title}
+            className="border-t-4 border-black p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition"
+          >
+            <div className="mb-4 space-y-2">
+              <tool.icon className="w-8 h-8 text-black" />
+              <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
+              <p className="text-neutral-700 text-sm leading-relaxed">{tool.description}</p>
+            </div>
+            <a
+              href={tool.link}
+              className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-neutral-300 pt-2 hover:underline"
+            >
+              Try Now →
+            </a>
+          </div>
+        ))}
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-neutral-300 py-6 text-center text-sm text-neutral-600 uppercase tracking-wide">
+        &copy; 2025 My AI Tool Suite
       </footer>
     </main>
   );
 }
+
+const tools = [
+  {
+    title: 'Text Summarizer',
+    description: 'Paste long articles and get concise summaries powered by OpenAI and Hugging Face.',
+    link: '/summarizer',
+    icon: FileText,
+  },
+  {
+    title: 'Resume Analyzer',
+    description: 'Upload your resume and receive detailed feedback and optimization tips.',
+    link: '/resume-analyzer',
+    icon: FileSearch,
+  },
+  {
+    title: 'AI Chatbot',
+    description: 'Chat with a highly intelligent AI trained to handle any topic or query.',
+    link: '/chatbot',
+    icon: Bot,
+  },
+  {
+    title: 'Image Caption Generator',
+    description: 'Upload an image and generate a meaningful, descriptive caption instantly.',
+    link: '/image-caption',
+    icon: ImageIcon,
+  },
+];
