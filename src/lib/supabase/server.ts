@@ -2,7 +2,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { type SupabaseClient } from "@supabase/supabase-js";
-import { type CookieOptions } from "@supabase/ssr";
 
 let supabase: SupabaseClient | null = null;
 
