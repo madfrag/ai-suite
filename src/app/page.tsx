@@ -3,32 +3,32 @@
 import {
   FileText,
   FileSearch,
-  Bot,
+ Bot,
   Image as ImageIcon,
 } from 'lucide-react';
 
 export default function Home() {
   return (
-    <main className="bg-white min-h-screen text-neutral-900 font-sans">
+    <main className="bg-background text-foreground min-h-screen font-sans">
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-6 py-24 border-b border-neutral-300">
+      <section className="max-w-6xl mx-auto px-6 py-24 border-b border-border">
         <div className="grid md:grid-cols-2 items-center gap-12">
           <div>
             <h1 className="text-6xl font-bold uppercase tracking-tight leading-[1.1] mb-6">
               AI Tool Suite
             </h1>
-            <p className="text-lg leading-relaxed text-neutral-700 max-w-prose mb-8">
+            <p className="text-lg leading-relaxed text-muted-foreground max-w-prose mb-8">
               Explore powerful, no-nonsense AI tools for summarizing text, analyzing resumes, and more. Built for clarity and function.
             </p>
             <a
               href="/summarizer"
-              className="inline-block border border-black px-6 py-3 uppercase text-sm tracking-widest hover:bg-black hover:text-white transition"
+              className="inline-block border border-foreground px-6 py-3 uppercase text-sm tracking-widest hover:bg-foreground hover:text-background transition"
             >
               Start Exploring
             </a>
           </div>
           <div className="text-right hidden md:block">
-            <p className="text-sm uppercase tracking-wide text-neutral-500">
+            <p className="text-sm uppercase tracking-wide text-muted-foreground">
               Designed with grid systems & typographic discipline
             </p>
           </div>
@@ -40,16 +40,16 @@ export default function Home() {
         {tools.map((tool) => (
           <div
             key={tool.title}
-            className="border-t-4 border-black p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition"
+            className="border-t-4 border-primary p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition bg-card text-card-foreground"
           >
             <div className="mb-4 space-y-2">
-              <tool.icon className="w-8 h-8 text-black" />
+              <tool.icon className="w-8 h-8 text-primary" />
               <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
-              <p className="text-neutral-700 text-sm leading-relaxed">{tool.description}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
             </div>
             <a
               href={tool.link}
-              className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-neutral-300 pt-2 hover:underline"
+              className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 hover:underline"
             >
               Try Now →
             </a>
@@ -58,7 +58,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-300 py-6 text-center text-sm text-neutral-600 uppercase tracking-wide">
+      <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground uppercase tracking-wide">
         &copy; 2025 My AI Tool Suite
       </footer>
     </main>

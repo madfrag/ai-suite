@@ -8,7 +8,7 @@ type Props = {
       <button
         onClick={onClick}
         disabled={disabled}
-        className="border border-black text-black px-6 py-2 uppercase text-sm tracking-wide hover:bg-black hover:text-white transition"
+        className="border border-border text-foreground px-6 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
       >
         Save Summary
       </button>

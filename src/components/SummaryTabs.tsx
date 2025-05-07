@@ -59,24 +59,36 @@ export default function SummaryTabs({ text }: { text: string }) {
 
   return (
     <div className="mt-8 space-y-6">
-      <div className="flex items-center space-x-4">
-        <span className="text-sm font-medium text-neutral-600">Short Summary</span>
+      {/* Toggle Switch Area */}
+      <div className="flex items-center gap-4 bg-card border border-border rounded-md p-4 shadow-sm">
+        <span className="text-sm font-medium text-muted-foreground">
+          HuggingFace (Short Summary)
+        </span>
         <Switch
           checked={provider === 'openai'}
           onCheckedChange={(checked) =>
             setProvider(checked ? 'openai' : 'huggingface')
           }
         />
-        <span className="text-sm font-medium text-neutral-600">Bullet Points</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          OpenAI (Bullet Points)
+        </span>
       </div>
 
+      {/* Action Buttons */}
       <div className="flex gap-4">
         <SummarizeButton onClick={summarize} loading={loading} />
         <SaveButton onClick={save} disabled={!results[provider]} />
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {/* Error Message */}
+      {error && (
+        <p className="text-sm text-destructive bg-destructive/10 rounded px-3 py-2 w-fit">
+          {error}
+        </p>
+      )}
 
+      {/* Summary Output */}
       {results[provider] && (
         <SummaryCard
           title={provider === 'openai' ? 'Bullet Point Summary' : 'Short Summary'}
