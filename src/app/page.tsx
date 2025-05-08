@@ -3,7 +3,7 @@
 import {
   FileText,
   FileSearch,
- Bot,
+  Bot,
   Image as ImageIcon,
 } from 'lucide-react';
 
@@ -37,24 +37,42 @@ export default function Home() {
 
       {/* Tools Grid */}
       <section className="max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-        {tools.map((tool) => (
-          <div
-            key={tool.title}
-            className="border-t-4 border-primary p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition bg-card text-card-foreground"
-          >
-            <div className="mb-4 space-y-2">
-              <tool.icon className="w-8 h-8 text-primary" />
-              <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
-            </div>
-            <a
-              href={tool.link}
-              className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 hover:underline"
+        {tools.map((tool) =>
+          tool.available ? (
+            <div
+              key={tool.title}
+              className="border-t-4 border-primary p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition bg-card text-card-foreground"
             >
-              Try Now →
-            </a>
-          </div>
-        ))}
+              <div className="mb-4 space-y-2">
+                <tool.icon className="w-8 h-8 text-primary" />
+                <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
+              </div>
+              <a
+                href={tool.link}
+                className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 hover:underline"
+              >
+                Try Now →
+              </a>
+            </div>
+          ) : (
+            <div
+              key={tool.title}
+              className="border-t-4 border-muted p-6 flex flex-col justify-between shadow-inner bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
+            >
+              <div className="mb-4 space-y-2">
+                <tool.icon className="w-8 h-8 text-muted-foreground" />
+                <h3 className="text-xl font-bold uppercase tracking-wide line-through">{tool.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
+              </div>
+              <span
+                className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 text-muted-foreground cursor-not-allowed opacity-70"
+              >
+                Coming Soon
+              </span>
+            </div>
+          )
+        )}
       </section>
 
       {/* Footer */}
@@ -71,23 +89,27 @@ const tools = [
     description: 'Paste long articles and get concise summaries powered by OpenAI and Hugging Face.',
     link: '/summarizer',
     icon: FileText,
+    available: true,
   },
   {
     title: 'Resume Analyzer',
     description: 'Upload your resume and receive detailed feedback and optimization tips.',
     link: '/resume-analyzer',
     icon: FileSearch,
+    available: false,
   },
   {
     title: 'AI Chatbot',
     description: 'Chat with a highly intelligent AI trained to handle any topic or query.',
     link: '/chatbot',
     icon: Bot,
+    available: true
   },
   {
     title: 'Image Caption Generator',
     description: 'Upload an image and generate a meaningful, descriptive caption instantly.',
     link: '/image-caption',
     icon: ImageIcon,
+    available: false,
   },
 ];
