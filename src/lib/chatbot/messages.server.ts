@@ -4,8 +4,8 @@ import { serverDb } from '@/lib/db/db.server-side';
 export const chatbotMessagesServer = {
   async getAllMessages(userId?: string | null) {
     const { data, error } = await serverDb.getMessages(userId);
-    console.log('Messages:', data);
-    console.error('Error:', error);
+    // console.log('Messages:', data);
+    // console.error('Error:', error);
     if (error) throw new Error(error.message);
     return data;
   },
