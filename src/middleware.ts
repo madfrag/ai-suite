@@ -9,8 +9,7 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const host = req.headers.get('host') || '';
   const subdomain = host.split('.')[0];
-console.log('Subdomain:', subdomain);
-  console.log('Host:', host);
+
   if (subdomain === 'www' || host.startsWith('localhost')) {
     return NextResponse.next();
   }

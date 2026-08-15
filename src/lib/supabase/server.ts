@@ -1,7 +1,7 @@
 // lib/supabase/server.ts
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { type SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { type SupabaseClient } from '@supabase/supabase-js';
 
 let supabase: SupabaseClient | null = null;
 
@@ -27,7 +27,7 @@ export const getServerSupabaseClient = async () => {
             }
           },
         },
-      },
+      }
     );
   }
   return supabase;

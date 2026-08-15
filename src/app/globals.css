@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -110,8 +110,6 @@
   --warning: #ffb74d;
   --warning-foreground: #111;
 }
-
-
 
 @layer base {
   * {

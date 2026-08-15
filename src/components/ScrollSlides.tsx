@@ -147,7 +147,7 @@ export default function ScrollSlides() {
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
@@ -164,8 +164,9 @@ export default function ScrollSlides() {
             perspective: slide.id === 1 ? '1000px' : 'none',
           }}
         >
-          <h1 className="text-5xl font-bold text-white" style={{ mixBlendMode: 'difference' }}>Slide {slide.id}</h1>
-
+          <h1 className="text-5xl font-bold text-white" style={{ mixBlendMode: 'difference' }}>
+            Slide {slide.id}
+          </h1>
         </section>
       ))}
 

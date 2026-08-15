@@ -5,9 +5,7 @@ export async function POST(req: Request) {
   const { original, summary } = await req.json();
   const supabase = await getServerSupabaseClient();
 
-  const { error } = await supabase
-    .from('summaries')
-    .insert([{ original, summary }]);
+  const { error } = await supabase.from('summaries').insert([{ original, summary }]);
 
   if (error) {
     console.error('Supabase insert error:', error);

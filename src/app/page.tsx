@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  FileText,
-  FileSearch,
-  Bot,
-  Image as ImageIcon,
-} from 'lucide-react';
+import { FileText, FileSearch, Bot, Image as ImageIcon } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -18,7 +13,8 @@ export default function Home() {
               AI Tool Suite
             </h1>
             <p className="text-lg leading-relaxed text-muted-foreground max-w-prose mb-8">
-              Explore powerful, no-nonsense AI tools for summarizing text, analyzing resumes, and more. Built for clarity and function.
+              Explore powerful, no-nonsense AI tools for summarizing text, analyzing resumes, and
+              more. Built for clarity and function.
             </p>
             <a
               href="/summarizer"
@@ -62,12 +58,12 @@ export default function Home() {
             >
               <div className="mb-4 space-y-2">
                 <tool.icon className="w-8 h-8 text-muted-foreground" />
-                <h3 className="text-xl font-bold uppercase tracking-wide line-through">{tool.title}</h3>
+                <h3 className="text-xl font-bold uppercase tracking-wide line-through">
+                  {tool.title}
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
               </div>
-              <span
-                className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 text-muted-foreground cursor-not-allowed opacity-70"
-              >
+              <span className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 text-muted-foreground cursor-not-allowed opacity-70">
                 Coming Soon
               </span>
             </div>
@@ -86,7 +82,8 @@ export default function Home() {
 const tools = [
   {
     title: 'Text Summarizer',
-    description: 'Paste long articles and get concise summaries powered by OpenAI and Hugging Face.',
+    description:
+      'Paste long articles and get concise summaries powered by OpenAI and Hugging Face.',
     link: '/summarizer',
     icon: FileText,
     available: true,
@@ -103,7 +100,7 @@ const tools = [
     description: 'Chat with a highly intelligent AI trained to handle any topic or query.',
     link: '/chatbot',
     icon: Bot,
-    available: true
+    available: true,
   },
   {
     title: 'Image Caption Generator',

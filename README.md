@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Suite
+
+A collection of AI-powered tools built with Next.js 15, React 19, and TypeScript. Features a chatbot with persistent conversation history and a multi-provider text summarizer.
+
+**Live demo:** [coming soon]
+
+---
+
+## Features
+
+### AI Chatbot
+
+- Conversational interface powered by OpenAI GPT-4o
+- Persistent chat history stored in Supabase
+- Multiple chat sessions with session switching
+- Anonymous user identification
+
+### Text Summarizer
+
+- Dual-provider support: OpenAI GPT-4o and HuggingFace BART
+- Toggle between providers to compare outputs
+- Save summaries to database for later reference
+
+### Infrastructure
+
+- Subdomain-based routing via Next.js middleware
+- Server-side Supabase client with SSR support
+- Dark/light theme with system preference detection
+- Responsive UI with Tailwind CSS v4 and Radix UI
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **UI:** React 19, Tailwind CSS v4, Radix UI
+- **Language:** TypeScript
+- **AI:** OpenAI API (GPT-4o), HuggingFace Inference API
+- **Database:** Supabase (PostgreSQL)
+- **Animation:** Framer Motion, GSAP
+- **Deployment:** Vercel
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- OpenAI API key
+- Supabase project (for chat persistence and saved summaries)
+- HuggingFace API key (optional, for BART summarizer)
+
+### Setup
+
+```bash
+git clone https://github.com/madfrag/ai-suite.git
+cd ai-suite
+npm install
+```
+
+Create `.env.local`:
+
+```env
+OPENAI_API_KEY=your_openai_key
+HUGGINGFACE_API_KEY=your_hf_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Database
+
+Create the following tables in Supabase:
+
+**chatbot_messages**
+
+| Column          | Type                                 |
+| --------------- | ------------------------------------ |
+| id              | uuid (PK, default gen_random_uuid()) |
+| user_id         | text                                 |
+| chat_session_id | text                                 |
+| role            | text                                 |
+| content         | text                                 |
+| created_at      | timestamptz (default now())          |
+
+**summaries**
+
+| Column     | Type                                 |
+| ---------- | ------------------------------------ |
+| id         | uuid (PK, default gen_random_uuid()) |
+| original   | text                                 |
+| summary    | text                                 |
+| created_at | timestamptz (default now())          |
+
+### Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── chat/          # Chat send & history endpoints
+│   │   ├── summarize/     # Multi-provider summarization
+│   │   └── save-summary/  # Persist summaries to Supabase
+│   ├── chatbot/           # Chat UI with dynamic sessions
+│   ├── summarizer/        # Summarizer page
+│   └── layout.tsx
+├── components/            # UI components (ChatUI, SummaryTabs, etc.)
+├── lib/
+│   ├── db/                # Database abstraction layer
+│   ├── supabase/          # Supabase client (server & client)
+│   └── chatbot/           # Chat message service
+└── middleware.ts          # Subdomain routing
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [ ] Streaming responses (SSE / Vercel AI SDK)
+- [ ] Resume analyzer
+- [ ] Image caption generator
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

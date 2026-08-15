@@ -66,13 +66,9 @@ export default function SummaryTabs({ text }: { text: string }) {
         </span>
         <Switch
           checked={provider === 'openai'}
-          onCheckedChange={(checked) =>
-            setProvider(checked ? 'openai' : 'huggingface')
-          }
+          onCheckedChange={(checked) => setProvider(checked ? 'openai' : 'huggingface')}
         />
-        <span className="text-sm font-medium text-muted-foreground">
-          OpenAI (Bullet Points)
-        </span>
+        <span className="text-sm font-medium text-muted-foreground">OpenAI (Bullet Points)</span>
       </div>
 
       {/* Action Buttons */}
