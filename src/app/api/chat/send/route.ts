@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     role: msg.role,
     content: msg.content,
   }));
+  console.log('Formatted messages for OpenAI:', formattedMessages);
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',

@@ -12,7 +12,7 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type Message = {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   chat_session_id?: string;
 };
@@ -46,6 +46,12 @@ export default function ChatUI() {
 
     const loadMessages = async () => {
       const res = await fetch('/api/chat/history?userId=' + localUserId);
+      console.log('Fetched messages:', res);
+      if (!res.ok) {
+        const systemMessage = { role: 'system' as const, content: 'Failed to load chat history. Please try again later.' };
+        setMessages((prev) => [...prev, systemMessage]);
+        return;
+      }
       const data = await res.json();
       setAllUserMessages(data.messages);
       setMessages(
@@ -69,6 +75,13 @@ export default function ChatUI() {
       method: 'POST',
       body: JSON.stringify({ content: userMessage.content, userId, chatSessionId }),
     });
+    console.log('Response from /api/chat/send:', res);
+    if (!res.ok) {
+      const systemMessage = { role: 'system' as const, content: 'Failed to send message. Please try again later.' };
+      setMessages((prev) => [...prev, systemMessage]);
+      setLoading(false);
+      return;
+    }
 
     const data = await res.json();
     const assistantMessage = { role: 'assistant' as const, content: data.reply };

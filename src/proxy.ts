@@ -5,7 +5,7 @@ export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|api).*)'],
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const host = req.headers.get('host') || '';
   const subdomain = host.split('.')[0];

@@ -39,7 +39,10 @@ export const chatbotMessagesServer = {
 
   async getChatSessionMessages(userId?: string, chatSessionId?: string) {
     const { data, error } = await serverDb.getMessages(userId, chatSessionId);
-    if (error) throw new Error(error.message);
+    if (error) {
+      return []; // Return an empty array if there's an error fetching messages 
+      // throw new Error(error.message);
+    }
     return data.filter((msg: any) => msg.chat_session_id === chatSessionId);
   },
 };
