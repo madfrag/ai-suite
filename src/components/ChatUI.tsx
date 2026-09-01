@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -21,47 +21,51 @@ export default function ChatUI() {
   const params = useParams();
   const router = useRouter();
 
-  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const chatSessionId = (params?.chatSessionId as string[])?.[0] || null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [allUserMessages, setAllUserMessages] = useState<Message[]>([]);
-  const [groupedMessages, setGroupedMessages] = useState<Record<string, Message[]>>({});
   const [isOpen, setIsOpen] = useState(false);
 
+  const groupedMessages = useMemo(() => {
+    return allUserMessages.reduce(
+      (acc, msg) => {
+        if (!msg.chat_session_id) return acc;
+        if (!acc[msg.chat_session_id]) acc[msg.chat_session_id] = [];
+        acc[msg.chat_session_id].push(msg);
+        return acc;
+      },
+      {} as Record<string, Message[]>
+    );
+  }, [allUserMessages]);
+
   useEffect(() => {
-    const chatSessionIdParam = params?.chatSessionId as string;
-    if (!chatSessionIdParam) {
+    console.log('Current chatSessionId from params:', chatSessionId);
+    if (!chatSessionId) {
       router.push('/chatbot/' + crypto.randomUUID());
       return;
     }
-    let localUserId = localStorage.getItem('anon_id');
-    if (!localUserId) {
-      localUserId = crypto.randomUUID();
-      localStorage.setItem('anon_id', localUserId);
-    }
-    setUserId(localUserId);
 
     const loadMessages = async () => {
-      const res = await fetch('/api/chat/history?userId=' + localUserId);
+      const res = await fetch('/api/chat/history');
       console.log('Fetched messages:', res);
       if (!res.ok) {
-        const systemMessage = { role: 'system' as const, content: 'Failed to load chat history. Please try again later.' };
+        const systemMessage = {
+          role: 'system' as const,
+          content: 'Failed to load chat history. Please try again later.',
+        };
         setMessages((prev) => [...prev, systemMessage]);
         return;
       }
       const data = await res.json();
       setAllUserMessages(data.messages);
-      setMessages(
-        data.messages.filter((msg: Message) => msg.chat_session_id === chatSessionIdParam)
-      );
+      setMessages(data.messages.filter((msg: Message) => msg.chat_session_id === chatSessionId));
     };
 
     loadMessages();
-    setChatSessionId(chatSessionIdParam);
-  }, [params, router]);
+  }, [chatSessionId, router]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -73,11 +77,14 @@ export default function ChatUI() {
 
     const res = await fetch('/api/chat/send', {
       method: 'POST',
-      body: JSON.stringify({ content: userMessage.content, userId, chatSessionId }),
+      body: JSON.stringify({ content: userMessage.content, chatSessionId }),
     });
     console.log('Response from /api/chat/send:', res);
     if (!res.ok) {
-      const systemMessage = { role: 'system' as const, content: 'Failed to send message. Please try again later.' };
+      const systemMessage = {
+        role: 'system' as const,
+        content: 'Failed to send message. Please try again later.',
+      };
       setMessages((prev) => [...prev, systemMessage]);
       setLoading(false);
       return;
@@ -92,20 +99,6 @@ export default function ChatUI() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  useEffect(() => {
-    const grouped = allUserMessages.reduce(
-      (acc, msg) => {
-        if (!msg.chat_session_id) return acc;
-        if (!acc[msg.chat_session_id]) acc[msg.chat_session_id] = [];
-        acc[msg.chat_session_id].push(msg);
-        return acc;
-      },
-      {} as Record<string, Message[]>
-    );
-
-    setGroupedMessages(grouped);
-  }, [allUserMessages]);
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4 h-screen flex flex-col text-foreground bg-background w-full">
@@ -122,7 +115,7 @@ export default function ChatUI() {
             <span>Previous Chat Sessions</span>
             {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </AccordionTrigger>
-          <AccordionContent className="p-4 space-y-3 max-h-[300px] overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
+          <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
             {Object.entries(groupedMessages).length === 0 && (
               <p className="text-sm text-muted-foreground">No previous chats found.</p>
             )}
@@ -155,6 +148,7 @@ export default function ChatUI() {
               {msg.content}
             </div>
           ))}
+          {loading && <div className="waiting"></div>}
           <div ref={bottomRef} />
         </div>
 

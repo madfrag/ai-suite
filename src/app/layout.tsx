@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
+import './custom.css';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Providers } from '@/lib/providers';
 import HomeButton from '@/components/HomeButton';

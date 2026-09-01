@@ -2,31 +2,33 @@ import { getServerSupabaseClient } from '@/lib/supabase/server';
 
 export const supabaseDb = {
   async insertMessage({
-    userId,
     role,
     content,
     chatSessionId,
   }: {
-    userId?: string | null;
     role: string;
     content: string;
     chatSessionId?: string;
   }) {
     const supabase = await getServerSupabaseClient();
 
-    return await supabase.from('chatbot_messages').insert([
-      {
-        user_id: userId,
-        role: role,
-        content: content,
-        chat_session_id: chatSessionId,
-      },
-    ]);
+    const inserted = await supabase
+      .from('chatbot_messages')
+      .insert([
+        {
+          role: role,
+          content: content,
+          chat_session_id: chatSessionId,
+        },
+      ])
+      .select();
+    console.log('Inserted message into Supabase:', inserted);
+    return inserted;
   },
 
-  async getMessages(userId?: string | null, chatSessionId?: string) {
+  async getMessages(chatSessionId?: string) {
     const supabase = await getServerSupabaseClient();
-    let query = supabase.from('chatbot_messages').select('*').eq('user_id', userId);
+    let query = supabase.from('chatbot_messages').select('*');
 
     if (chatSessionId) {
       query = query.eq('chat_session_id', chatSessionId);
@@ -35,12 +37,23 @@ export const supabaseDb = {
     return await query.order('created_at', { ascending: true });
   },
 
-  async clearMessages(userId?: string, chatSessionId?: string) {
+  async clearMessages(chatSessionId?: string) {
     const supabase = await getServerSupabaseClient();
-    return await supabase
-      .from('chatbot_messages')
-      .delete()
-      .eq('user_id', userId)
-      .eq('chat_session_id', chatSessionId);
+    return await supabase.from('chatbot_messages').delete().eq('chat_session_id', chatSessionId);
+  },
+
+  async insertChatSummary({ chatSessionId, summary }: { chatSessionId: string; summary: string }) {
+    const supabase = await getServerSupabaseClient();
+    const { data, error } = await supabase
+      .from('chat_session_summary')
+      .insert([{ chat_session_id: chatSessionId, summary }])
+      .select();
+
+    if (error) {
+      console.error('Error inserting chat summary:', error);
+      throw new Error(error.message);
+    }
+
+    return data;
   },
 };

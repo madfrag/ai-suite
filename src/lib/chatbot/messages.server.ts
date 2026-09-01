@@ -2,45 +2,36 @@
 import { serverDb } from '@/lib/db/db.server-side';
 
 export const chatbotMessagesServer = {
-  async getAllMessages(userId?: string | null) {
-    const { data, error } = await serverDb.getMessages(userId);
+  async getAllMessages() {
+    const { data, error } = await serverDb.getMessages();
     if (error) throw new Error(error.message);
     return data;
   },
 
-  async addUserMessage({
-    userId,
-    content,
-    chatSessionId,
-  }: {
-    userId?: string | null;
-    content: string;
-    chatSessionId?: string;
-  }) {
-    return await serverDb.insertMessage({ userId, role: 'user', content, chatSessionId });
+  async addUserMessage({ content, chatSessionId }: { content: string; chatSessionId?: string }) {
+    console.log('Adding user message:', { content, chatSessionId });
+    return await serverDb.insertMessage({ role: 'user', content, chatSessionId });
   },
 
   async addAssistantMessage({
-    userId,
     content,
     chatSessionId,
   }: {
-    userId?: string;
     content: string;
     chatSessionId?: string;
   }) {
-    return await serverDb.insertMessage({ userId, role: 'assistant', content, chatSessionId });
+    return await serverDb.insertMessage({ role: 'assistant', content, chatSessionId });
   },
 
-  async clearMessages(userId?: string, chatSessionId?: string) {
-    const { error } = await serverDb.clearMessages(userId, chatSessionId);
+  async clearMessages(chatSessionId?: string) {
+    const { error } = await serverDb.clearMessages(chatSessionId);
     if (error) throw new Error(error.message);
   },
 
-  async getChatSessionMessages(userId?: string, chatSessionId?: string) {
-    const { data, error } = await serverDb.getMessages(userId, chatSessionId);
+  async getChatSessionMessages(chatSessionId?: string) {
+    const { data, error } = await serverDb.getMessages(chatSessionId);
     if (error) {
-      return []; // Return an empty array if there's an error fetching messages 
+      return []; // Return an empty array if there's an error fetching messages
       // throw new Error(error.message);
     }
     return data.filter((msg: any) => msg.chat_session_id === chatSessionId);
