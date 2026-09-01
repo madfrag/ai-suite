@@ -65,7 +65,6 @@ Create `.env.local`:
 OPENAI_API_KEY=your_openai_key
 HUGGINGFACE_API_KEY=your_hf_key
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### Database
@@ -77,7 +76,6 @@ Create the following tables in Supabase:
 | Column          | Type                                 |
 | --------------- | ------------------------------------ |
 | id              | uuid (PK, default gen_random_uuid()) |
-| user_id         | text                                 |
 | chat_session_id | text                                 |
 | role            | text                                 |
 | content         | text                                 |
