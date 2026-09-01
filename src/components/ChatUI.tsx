@@ -135,20 +135,30 @@ export default function ChatUI() {
       </Accordion>
 
       <div className="flex-1 overflow-hidden flex flex-col border border-border rounded-lg bg-card text-card-foreground shadow relative w-full">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`whitespace-pre-wrap px-4 py-3 rounded-md max-w-prose text-sm ${
-                msg.role === 'user'
-                  ? 'bg-secondary text-secondary-foreground self-end'
-                  : 'bg-primary text-primary-foreground self-start'
+              className={`relative max-w-[85%] sm:max-w-prose ${
+                msg.role === 'user' ? 'self-end' : 'self-start'
               }`}
             >
-              {msg.content}
+              <div
+                className={`whitespace-pre-wrap px-4 py-3 rounded-md text-sm ${
+                  msg.role === 'user'
+                    ? 'bg-secondary text-secondary-foreground'
+                    : 'bg-muted text-foreground'
+                }`}
+              >
+                {msg.content}
+              </div>
+              {/* Fade active only while the last assistant message is streaming */}
+              {msg.role === 'assistant' && loading && idx === messages.length - 1 && (
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-muted to-transparent rounded-b-md pointer-events-none" />
+              )}
             </div>
           ))}
-          {loading && <div className="waiting"></div>}
+          {<div className="waiting"></div>}
           <div ref={bottomRef} />
         </div>
 

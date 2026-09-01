@@ -2,7 +2,7 @@
 .waiting {
   width: 88px;
   height: 12px;
-  --_g: no-repeat radial-gradient(farthest-side, #000 94%, #0000);
+  --_g: no-repeat radial-gradient(farthest-side, var(--foreground) 94%, #0000);
   background:
     var(--_g) 25% 0,
     var(--_g) 75% 0;
@@ -16,7 +16,7 @@
   height: 12px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #000;
+  background: var(--foreground);
   inset: 0;
   margin: auto;
   animation: l24-1 1s cubic-bezier(0.5, 300, 0.5, -300) infinite;
