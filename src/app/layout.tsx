@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import './globals.css';
 import './custom.css';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Providers } from '@/lib/providers';
-import HomeButton from '@/components/HomeButton';
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
@@ -37,40 +37,16 @@ export default async function RootLayout({
     <html lang="en" className={isDark ? 'dark' : ''}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <header className="fixed top-4 left-4"></header>
-          {/* <HomeButton /> */}
-          <div style={{ background: 'black' }}>
-            <button
-              style={{
-                position: 'fixed',
-                top: '20px',
-                left: '20px',
-                zIndex: 50,
-                mixBlendMode: 'difference',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:scale-10"
+          <header className="fixed top-0 left-0 right-0 z-50 h-12 px-6 flex items-center justify-between border-b border-border/40 bg-background/90 backdrop-blur-md">
+            <Link
+              href="/"
+              className="text-sm font-semibold uppercase tracking-widest text-foreground hover:text-primary transition-colors"
             >
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"></path>
-              </svg>
-            </button>
-          </div>
-          {children}
-          <div className="fixed bottom-0 right-0 p-4">
+              Home
+            </Link>
             <ThemeToggle />
-          </div>
+          </header>
+          {children}
         </Providers>
       </body>
     </html>

@@ -23,16 +23,24 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // ❌ Avoid hydration mismatch
-  if (!mounted) return null;
+  if (!mounted) return <div className="w-8 h-8" />;
 
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
-      aria-label="Toggle Theme"
+      className="relative w-8 h-8 flex items-center justify-center rounded-md border border-border hover:bg-muted transition-colors"
+      aria-label="Toggle theme"
     >
-      {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      <Sun
+        className={`absolute w-4 h-4 transition-all duration-300 ${
+          theme === 'light' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-50'
+        }`}
+      />
+      <Moon
+        className={`absolute w-4 h-4 transition-all duration-300 ${
+          theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'
+        }`}
+      />
     </button>
   );
 }

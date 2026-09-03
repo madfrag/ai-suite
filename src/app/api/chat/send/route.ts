@@ -1,5 +1,4 @@
 // app/api/chat/send/route.ts
-import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { chatbotMessagesServer } from '@/lib/chatbot/messages.server';
 import { SYSTEM_PROMPT } from '@/lib/consts';
@@ -10,30 +9,42 @@ export async function POST(req: Request) {
   const { content, chatSessionId } = await req.json();
 
   await chatbotMessagesServer.addUserMessage({ content, chatSessionId });
-
   const history = await chatbotMessagesServer.getChatSessionMessages(chatSessionId);
 
-  const chatLength = history.length;
-  const chatSummary = `Chat length: ${chatLength}`;
+  const enc = new TextEncoder();
 
-  const formattedMessages = [
-    { role: 'system', content: SYSTEM_PROMPT ?? '' },
-    ...history.map((msg) => ({
-      role: msg.role,
-      content: msg.content,
-    })),
-  ];
-  console.log('Formatted messages for OpenAI:', formattedMessages);
+  const stream = new ReadableStream({
+    async start(controller) {
+      const response = await openai.responses.create({
+        model: 'gpt-5-nano',
+        input: [
+          { role: 'system', content: SYSTEM_PROMPT ?? '' },
+          ...history.map((m) => ({ role: m.role, content: m.content })),
+        ],
+        stream: true,
+      });
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: formattedMessages,
-    temperature: 0.7,
+      let fullText = '';
+
+      for await (const event of response) {
+        // Forward every raw event to the client
+        controller.enqueue(enc.encode(JSON.stringify(event) + '\n'));
+
+        if (event.type === 'response.output_text.delta') {
+          fullText += event.delta;
+        }
+
+        // Save the complete message only when the stream is fully done
+        if (event.type === 'response.completed') {
+          await chatbotMessagesServer.addAssistantMessage({ content: fullText, chatSessionId });
+        }
+      }
+
+      controller.close();
+    },
   });
 
-  const reply = response.choices[0].message.content ?? '-';
-
-  await chatbotMessagesServer.addAssistantMessage({ content: reply, chatSessionId });
-
-  return NextResponse.json({ reply });
+  return new Response(stream, {
+    headers: { 'Content-Type': 'application/x-ndjson' },
+  });
 }

@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const payload =
     provider === 'openai'
       ? {
-          model: 'gpt-4o',
+          model: 'gpt-5-nano',
           messages: [{ role: 'user', content: `Summarize this in 5 bullet points:\n\n${text}` }],
           temperature: 0.7,
         }
