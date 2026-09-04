@@ -6,13 +6,13 @@ export const supabaseDb = {
     content,
     chatSessionId,
   }: {
-    role: string;
+    role: 'user' | 'assistant';
     content: string;
     chatSessionId?: string;
   }) {
     const supabase = await getServerSupabaseClient();
 
-    const inserted = await supabase
+    return await supabase
       .from('chatbot_messages')
       .insert([
         {
@@ -22,8 +22,6 @@ export const supabaseDb = {
         },
       ])
       .select();
-    console.log('Inserted message into Supabase:', inserted);
-    return inserted;
   },
 
   async getMessages(chatSessionId?: string) {
@@ -35,6 +33,11 @@ export const supabaseDb = {
     }
 
     return await query.order('created_at', { ascending: true });
+  },
+
+  async getSessionPreviews() {
+    const supabase = await getServerSupabaseClient();
+    return await supabase.rpc('get_chat_session_previews');
   },
 
   async clearMessages(chatSessionId?: string) {

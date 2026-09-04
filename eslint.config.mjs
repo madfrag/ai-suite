@@ -1,5 +1,5 @@
-import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-import nextTypescript from "eslint-config-next/typescript";
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import nextTypescript from 'eslint-config-next/typescript';
 import prettierConfig from 'eslint-plugin-prettier/recommended';
 
 const eslintConfig = [
@@ -7,8 +7,8 @@ const eslintConfig = [
   ...nextTypescript,
   prettierConfig,
   {
-    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
-  }
+    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+  },
 ];
 
 export default eslintConfig;

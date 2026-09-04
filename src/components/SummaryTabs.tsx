@@ -11,6 +11,7 @@ export default function SummaryTabs({ text }: { text: string }) {
   const [results, setResults] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [saved, setSaved] = useState(false);
 
   const summarize = async () => {
     if (!text.trim()) return;
@@ -42,6 +43,8 @@ export default function SummaryTabs({ text }: { text: string }) {
     const summary = results[provider];
     if (!summary) return;
 
+    setError('');
+
     const res = await fetch('/api/save-summary', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -51,10 +54,12 @@ export default function SummaryTabs({ text }: { text: string }) {
     const data = await res.json();
 
     if (!res.ok) {
-      alert('Failed to save.');
-    } else {
-      alert('Saved!');
+      setError(data.error || 'Failed to save.');
+      return;
     }
+
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -82,6 +87,10 @@ export default function SummaryTabs({ text }: { text: string }) {
         <p className="text-sm text-destructive bg-destructive/10 rounded px-3 py-2 w-fit">
           {error}
         </p>
+      )}
+
+      {saved && (
+        <p className="text-sm text-muted-foreground bg-muted rounded px-3 py-2 w-fit">Saved.</p>
       )}
 
       {/* Summary Output */}

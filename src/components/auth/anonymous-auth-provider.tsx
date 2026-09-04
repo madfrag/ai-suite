@@ -1,7 +1,7 @@
 // src/components/auth/anonymous-auth-provider.tsx
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { getSupabaseClient } from '@/lib/supabase/client';
 
