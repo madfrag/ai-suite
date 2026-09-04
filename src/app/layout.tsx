@@ -31,7 +31,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = (await cookies()).get('theme')?.value ?? 'light';
+  const theme = (await cookies()).get('theme')?.value === 'dark' ? 'dark' : 'light';
   const isDark = theme === 'dark';
   return (
     <html lang="en" className={isDark ? 'dark' : ''}>
@@ -44,7 +44,7 @@ export default async function RootLayout({
             >
               Home
             </Link>
-            <ThemeToggle />
+            <ThemeToggle initialTheme={theme} />
           </header>
           {children}
         </Providers>

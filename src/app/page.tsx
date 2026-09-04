@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FileText, FileSearch, Bot, Image as ImageIcon } from 'lucide-react';
 
 export default function Home() {
@@ -16,12 +17,12 @@ export default function Home() {
               Explore powerful, no-nonsense AI tools for summarizing text, analyzing resumes, and
               more. Built for clarity and function.
             </p>
-            <a
+            <Link
               href="/summarizer"
               className="inline-block border border-foreground px-6 py-3 uppercase text-sm tracking-widest hover:bg-foreground hover:text-background transition"
             >
               Start Exploring
-            </a>
+            </Link>
           </div>
           <div className="text-right hidden md:block">
             <p className="text-sm uppercase tracking-wide text-muted-foreground">
@@ -44,12 +45,12 @@ export default function Home() {
                 <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
               </div>
-              <a
+              <Link
                 href={tool.link}
                 className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 hover:underline"
               >
                 Try Now →
-              </a>
+              </Link>
             </div>
           ) : (
             <div

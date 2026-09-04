@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import TextInput from '@/components/TextInput';
 import SummaryTabs from '@/components/SummaryTabs';
 
 export default function SummarizerPage() {

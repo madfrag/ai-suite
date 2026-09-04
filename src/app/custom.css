@@ -9,61 +9,69 @@
   white-space: nowrap;
   color: var(--foreground);
   text-shadow:
-    calc(-1*var(--w)) 0,
-    calc(-2*var(--w)) 0,
-    calc(-3*var(--w)) 0,
-    calc(-4*var(--w)) 0,
-    calc(-5*var(--w)) 0,
-    calc(-6*var(--w)) 0,
-    calc(-7*var(--w)) 0,
-    calc(-8*var(--w)) 0,
-    calc(-9*var(--w)) 0;
+    calc(-1 * var(--w)) 0,
+    calc(-2 * var(--w)) 0,
+    calc(-3 * var(--w)) 0,
+    calc(-4 * var(--w)) 0,
+    calc(-5 * var(--w)) 0,
+    calc(-6 * var(--w)) 0,
+    calc(-7 * var(--w)) 0,
+    calc(-8 * var(--w)) 0,
+    calc(-9 * var(--w)) 0;
   animation: l16 2s infinite;
 }
 .thinking:before {
-  content: "Thinking..";
+  content: 'Thinking..';
 }
 @keyframes l16 {
-  20% { text-shadow:
-    calc(-1*var(--w)) 0,
-    calc(-2*var(--w)) 0 var(--primary),
-    calc(-3*var(--w)) 0,
-    calc(-4*var(--w)) 0 var(--warning),
-    calc(-5*var(--w)) 0 var(--muted),
-    calc(-6*var(--w)) 0,
-    calc(-7*var(--w)) 0,
-    calc(-8*var(--w)) 0 var(--success),
-    calc(-9*var(--w)) 0; }
-  40% { text-shadow:
-    calc(-1*var(--w)) 0,
-    calc(-2*var(--w)) 0 var(--primary),
-    calc(-3*var(--w)) 0 var(--accent),
-    calc(-4*var(--w)) 0,
-    calc(-5*var(--w)) 0 var(--success),
-    calc(-6*var(--w)) 0 var(--warning),
-    calc(-7*var(--w)) 0,
-    calc(-8*var(--w)) 0 var(--success),
-    calc(-9*var(--w)) 0; }
-  60% { text-shadow:
-    calc(-1*var(--w)) 0 var(--muted),
-    calc(-2*var(--w)) 0,
-    calc(-3*var(--w)) 0 var(--accent),
-    calc(-4*var(--w)) 0,
-    calc(-5*var(--w)) 0 var(--success),
-    calc(-6*var(--w)) 0,
-    calc(-7*var(--w)) 0 var(--accent),
-    calc(-8*var(--w)) 0 var(--warning),
-    calc(-9*var(--w)) 0 var(--primary); }
-  80% { text-shadow:
-    calc(-1*var(--w)) 0 var(--muted),
-    calc(-2*var(--w)) 0 var(--accent),
-    calc(-3*var(--w)) 0 var(--muted),
-    calc(-4*var(--w)) 0 var(--warning),
-    calc(-5*var(--w)) 0 var(--primary),
-    calc(-6*var(--w)) 0,
-    calc(-7*var(--w)) 0 var(--muted-foreground),
-    calc(-8*var(--w)) 0 var(--muted),
-    calc(-9*var(--w)) 0; }
+  20% {
+    text-shadow:
+      calc(-1 * var(--w)) 0,
+      calc(-2 * var(--w)) 0 var(--primary),
+      calc(-3 * var(--w)) 0,
+      calc(-4 * var(--w)) 0 var(--warning),
+      calc(-5 * var(--w)) 0 var(--muted),
+      calc(-6 * var(--w)) 0,
+      calc(-7 * var(--w)) 0,
+      calc(-8 * var(--w)) 0 var(--success),
+      calc(-9 * var(--w)) 0;
+  }
+  40% {
+    text-shadow:
+      calc(-1 * var(--w)) 0,
+      calc(-2 * var(--w)) 0 var(--primary),
+      calc(-3 * var(--w)) 0 var(--accent),
+      calc(-4 * var(--w)) 0,
+      calc(-5 * var(--w)) 0 var(--success),
+      calc(-6 * var(--w)) 0 var(--warning),
+      calc(-7 * var(--w)) 0,
+      calc(-8 * var(--w)) 0 var(--success),
+      calc(-9 * var(--w)) 0;
+  }
+  60% {
+    text-shadow:
+      calc(-1 * var(--w)) 0 var(--muted),
+      calc(-2 * var(--w)) 0,
+      calc(-3 * var(--w)) 0 var(--accent),
+      calc(-4 * var(--w)) 0,
+      calc(-5 * var(--w)) 0 var(--success),
+      calc(-6 * var(--w)) 0,
+      calc(-7 * var(--w)) 0 var(--accent),
+      calc(-8 * var(--w)) 0 var(--warning),
+      calc(-9 * var(--w)) 0 var(--primary);
+  }
+  80% {
+    text-shadow:
+      calc(-1 * var(--w)) 0 var(--muted),
+      calc(-2 * var(--w)) 0 var(--accent),
+      calc(-3 * var(--w)) 0 var(--muted),
+      calc(-4 * var(--w)) 0 var(--warning),
+      calc(-5 * var(--w)) 0 var(--primary),
+      calc(-6 * var(--w)) 0,
+      calc(-7 * var(--w)) 0 var(--muted-foreground),
+      calc(-8 * var(--w)) 0 var(--muted),
+      calc(-9 * var(--w)) 0;
+  }
 }
 .waiting {
   --_dim: color-mix(in srgb, var(--foreground) 15%, transparent);
@@ -73,8 +81,28 @@
   animation: l5 1s infinite linear alternate;
 }
 @keyframes l5 {
-  0%  { box-shadow:  12px 0 var(--foreground), -12px 0 var(--_dim); background: var(--foreground); }
-  33% { box-shadow:  12px 0 var(--foreground), -12px 0 var(--_dim); background: var(--_dim);        }
-  66% { box-shadow:  12px 0 var(--_dim),       -12px 0 var(--foreground); background: var(--_dim);  }
-  100%{ box-shadow:  12px 0 var(--_dim),       -12px 0 var(--foreground); background: var(--foreground); }
+  0% {
+    box-shadow:
+      12px 0 var(--foreground),
+      -12px 0 var(--_dim);
+    background: var(--foreground);
+  }
+  33% {
+    box-shadow:
+      12px 0 var(--foreground),
+      -12px 0 var(--_dim);
+    background: var(--_dim);
+  }
+  66% {
+    box-shadow:
+      12px 0 var(--_dim),
+      -12px 0 var(--foreground);
+    background: var(--_dim);
+  }
+  100% {
+    box-shadow:
+      12px 0 var(--_dim),
+      -12px 0 var(--foreground);
+    background: var(--foreground);
+  }
 }

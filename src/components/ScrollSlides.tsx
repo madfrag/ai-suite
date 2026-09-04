@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Home, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { Button } from '@radix-ui/themes';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -138,7 +138,7 @@ export default function ScrollSlides() {
     });
 
     // Back to top button trigger
-    const st = ScrollTrigger.create({
+    ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
       onUpdate: (self) => {
