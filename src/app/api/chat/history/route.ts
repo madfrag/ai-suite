@@ -4,7 +4,12 @@ import { chatbotMessagesServer } from '@/lib/chatbot/messages.server';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  const messages = await chatbotMessagesServer.getAllMessages(userId);
+  const chatSessionId = searchParams.get('chatSessionId');
+
+  if (!chatSessionId) {
+    return NextResponse.json({ error: 'chatSessionId is required.' }, { status: 400 });
+  }
+
+  const messages = await chatbotMessagesServer.getChatSessionMessages(chatSessionId);
   return NextResponse.json({ messages });
 }

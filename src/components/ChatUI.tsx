@@ -2,19 +2,25 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@radix-ui/react-accordion';
-import { ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, Check, Plus } from 'lucide-react';
 
 type Message = {
   role: 'user' | 'assistant' | 'system';
   content: string;
   chat_session_id?: string;
+};
+
+type SessionPreview = {
+  chat_session_id: string;
+  content: string;
+  created_at: string;
 };
 
 export default function ChatUI() {
@@ -26,7 +32,8 @@ export default function ChatUI() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const [allUserMessages, setAllUserMessages] = useState<Message[]>([]);
+  const [sessions, setSessions] = useState<SessionPreview[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isReasoning, setIsReasoning] = useState(false);
@@ -38,28 +45,18 @@ export default function ChatUI() {
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
-  const groupedMessages = useMemo(() => {
-    return allUserMessages.reduce(
-      (acc, msg) => {
-        if (!msg.chat_session_id) return acc;
-        if (!acc[msg.chat_session_id]) acc[msg.chat_session_id] = [];
-        acc[msg.chat_session_id].push(msg);
-        return acc;
-      },
-      {} as Record<string, Message[]>
-    );
-  }, [allUserMessages]);
-
   useEffect(() => {
-    console.log('Current chatSessionId from params:', chatSessionId);
     if (!chatSessionId) {
       router.push('/chatbot/' + crypto.randomUUID());
       return;
     }
 
     const loadMessages = async () => {
-      const res = await fetch('/api/chat/history');
-      console.log('Fetched messages:', res);
+      setMessages([]);
+      setLoading(false);
+      setIsStreaming(false);
+      setIsReasoning(false);
+      const res = await fetch(`/api/chat/history?chatSessionId=${chatSessionId}`);
       if (!res.ok) {
         const systemMessage = {
           role: 'system' as const,
@@ -69,12 +66,21 @@ export default function ChatUI() {
         return;
       }
       const data = await res.json();
-      setAllUserMessages(data.messages);
-      setMessages(data.messages.filter((msg: Message) => msg.chat_session_id === chatSessionId));
+      setMessages(data.messages);
     };
 
     loadMessages();
   }, [chatSessionId, router]);
+
+  const loadSessions = async () => {
+    setSessionsLoading(true);
+    const res = await fetch('/api/chat/sessions');
+    if (res.ok) {
+      const data = await res.json();
+      setSessions(data.sessions);
+    }
+    setSessionsLoading(false);
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -154,13 +160,25 @@ export default function ChatUI() {
 
   return (
     <div className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-screen flex flex-col text-foreground bg-background w-full">
-      <h1 className="text-3xl font-bold uppercase mb-4 border-b border-border pb-4">AI Chatbot</h1>
+      <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
+        <h1 className="text-3xl font-bold uppercase">AI Chatbot</h1>
+        <button
+          onClick={() => router.push('/chatbot/' + crypto.randomUUID())}
+          className="flex items-center gap-1.5 border border-border text-foreground px-4 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
+        >
+          <Plus className="w-4 h-4" />
+          New Chat
+        </button>
+      </div>
 
       <Accordion
         type="single"
         collapsible
         className="mb-6 border border-border rounded-lg shadow-sm w-full"
-        onValueChange={(value) => setIsOpen(!!value)}
+        onValueChange={(value) => {
+          setIsOpen(!!value);
+          if (value) loadSessions();
+        }}
       >
         <AccordionItem value="history">
           <AccordionTrigger className="cursor-pointer flex justify-between items-center text-lg font-medium px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-t-lg w-full">
@@ -168,18 +186,17 @@ export default function ChatUI() {
             {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
-            {Object.entries(groupedMessages).length === 0 && (
+            {sessionsLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+            {!sessionsLoading && sessions.length === 0 && (
               <p className="text-sm text-muted-foreground">No previous chats found.</p>
             )}
-            {Object.entries(groupedMessages).map(([sessionId, messages]) => (
+            {sessions.map((session) => (
               <Link
-                key={sessionId}
-                href={`/chatbot/${sessionId}`}
+                key={session.chat_session_id}
+                href={`/chatbot/${session.chat_session_id}`}
                 className="block border border-border rounded-md p-3 bg-background text-foreground hover:bg-muted transition w-full"
               >
-                <p className="truncate text-sm text-muted-foreground">
-                  {messages.find((m) => m.role === 'user')?.content || 'No message'}
-                </p>
+                <p className="truncate text-sm text-muted-foreground">{session.content}</p>
               </Link>
             ))}
           </AccordionContent>
