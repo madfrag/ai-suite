@@ -2,14 +2,13 @@
 import { serverDb } from '@/lib/db/db.server-side';
 
 export const chatbotMessagesServer = {
-  async getAllMessages() {
-    const { data, error } = await serverDb.getMessages();
+  async getSessionPreviews() {
+    const { data, error } = await serverDb.getSessionPreviews();
     if (error) throw new Error(error.message);
     return data;
   },
 
   async addUserMessage({ content, chatSessionId }: { content: string; chatSessionId?: string }) {
-    console.log('Adding user message:', { content, chatSessionId });
     return await serverDb.insertMessage({ role: 'user', content, chatSessionId });
   },
 
@@ -31,9 +30,8 @@ export const chatbotMessagesServer = {
   async getChatSessionMessages(chatSessionId?: string) {
     const { data, error } = await serverDb.getMessages(chatSessionId);
     if (error) {
-      return []; // Return an empty array if there's an error fetching messages
-      // throw new Error(error.message);
+      return [];
     }
-    return data.filter((msg: any) => msg.chat_session_id === chatSessionId);
+    return data;
   },
 };
