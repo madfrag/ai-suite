@@ -1,6 +1,6 @@
 # AI Suite
 
-A collection of AI-powered tools built with Next.js 15, React 19, and TypeScript. Features a chatbot with persistent conversation history and a multi-provider text summarizer.
+A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript. Features a chatbot with persistent conversation history and a multi-provider text summarizer.
 
 **Live demo:** [coming soon]
 
@@ -10,16 +10,21 @@ A collection of AI-powered tools built with Next.js 15, React 19, and TypeScript
 
 ### AI Chatbot
 
-- Conversational interface powered by OpenAI GPT-4o
+- Conversational interface powered by OpenAI (gpt-5-nano)
 - Persistent chat history stored in Supabase
 - Multiple chat sessions with session switching
 - Anonymous user identification
 
 ### Text Summarizer
 
-- Dual-provider support: OpenAI GPT-4o and HuggingFace BART
+- Dual-provider support: OpenAI (gpt-5-nano) and HuggingFace BART
 - Toggle between providers to compare outputs
 - Save summaries to database for later reference
+
+> **Note:** the HuggingFace provider (`facebook/bart-large-cnn`) has a hard 1024-token
+> context window. Input text is truncated to the first ~3000 characters before it's
+> sent, so very long articles will be summarized from an excerpt rather than the full
+> text. The OpenAI provider has no such limit.
 
 ### Infrastructure
 
@@ -32,10 +37,10 @@ A collection of AI-powered tools built with Next.js 15, React 19, and TypeScript
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **UI:** React 19, Tailwind CSS v4, Radix UI
 - **Language:** TypeScript
-- **AI:** OpenAI API (GPT-4o), HuggingFace Inference API
+- **AI:** OpenAI API (gpt-5-nano), HuggingFace Inference API
 - **Database:** Supabase (PostgreSQL)
 - **Animation:** Framer Motion, GSAP
 - **Deployment:** Vercel
