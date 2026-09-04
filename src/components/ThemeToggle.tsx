@@ -1,20 +1,12 @@
 'use client';
 
 import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 
-export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const [cookies, setCookie] = useCookies(['theme']);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-  useEffect(() => {
-    setMounted(true);
-    const cookieTheme = cookies.theme || 'light';
-    setTheme(cookieTheme);
-    document.documentElement.classList.toggle('dark', cookieTheme === 'dark');
-  }, [cookies]);
+export default function ThemeToggle({ initialTheme }: { initialTheme: 'light' | 'dark' }) {
+  const [, setCookie] = useCookies(['theme']);
+  const [theme, setTheme] = useState(initialTheme);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -22,8 +14,6 @@ export default function ThemeToggle() {
     setCookie('theme', newTheme, { path: '/', maxAge: 60 * 60 * 24 * 365 });
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
-
-  if (!mounted) return <div className="w-8 h-8" />;
 
   return (
     <button
