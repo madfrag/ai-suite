@@ -11,6 +11,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    pool: 'vmThreads',
     setupFiles: ['./vitest.setup.ts'],
     env: {
       OPENAI_API_KEY: 'test-key',
