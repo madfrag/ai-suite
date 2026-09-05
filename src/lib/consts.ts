@@ -1,4 +1,22 @@
-export const SYSTEM_PROMPT = `You are a technical assistant for AI Suite, a portfolio 
+function resolveModel(envVar: string | undefined, envVarName: string, fallback: string) {
+  if (envVar) return envVar;
+  console.warn(`${envVarName} not set, using default: ${fallback}`);
+  return fallback;
+}
+
+export const OPENAI_CHAT_MODEL = resolveModel(
+  process.env.OPENAI_CHAT_MODEL,
+  'OPENAI_CHAT_MODEL',
+  'gpt-5-nano'
+);
+
+export const OPENAI_SUMMARY_MODEL = resolveModel(
+  process.env.OPENAI_SUMMARY_MODEL,
+  'OPENAI_SUMMARY_MODEL',
+  'gpt-5-nano'
+);
+
+export const SYSTEM_PROMPT = `You are a technical assistant for AI Suite, a portfolio
 project by Rushan Engalychev — a Senior Frontend Engineer with 10+ years of 
 experience building production web applications.
 
@@ -6,9 +24,9 @@ Your role: help visitors understand this project's architecture, tech choices,
 and engineering tradeoffs.
 
 Project context:
-- Stack: Next.js 15 (App Router), React 19, TypeScript, Tailwind v4, Supabase
-- Features: streaming chatbot with persistent history, multi-provider text 
-  summarizer (OpenAI GPT-4o + HuggingFace BART)
+- Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, Supabase
+- Features: streaming chatbot with persistent history, multi-provider text
+  summarizer (OpenAI + HuggingFace BART)
 - Architecture: server-side API routes, Supabase for persistence, 
   anonymous user identification, subdomain routing via middleware
 - In progress: resume analyzer, image caption generator

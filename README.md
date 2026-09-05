@@ -1,8 +1,10 @@
 # AI Suite
 
-A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript. Features a chatbot with persistent conversation history and a multi-provider text summarizer.
+![CI](https://github.com/madfrag/ai-suite/actions/workflows/ci.yml/badge.svg)
 
-**Live demo:** [coming soon]
+A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript. Currently ships a streaming chatbot with persistent history and a multi-provider text summarizer.
+
+**Live demo:** not deployed yet.
 
 ---
 
@@ -10,28 +12,27 @@ A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript
 
 ### AI Chatbot
 
-- Conversational interface powered by OpenAI (gpt-5-nano)
-- Persistent chat history stored in Supabase
-- Multiple chat sessions with session switching
-- Anonymous user identification
+- Streaming responses via the OpenAI Responses API
+- Persistent chat history stored in Supabase, scoped per anonymous user via RLS
+- Multiple chat sessions, with a "New Chat" button and a previous-sessions list that lazy-loads only when you open it (no fetching your entire history up front)
+- Anonymous user identification, no sign-up required
 
 ### Text Summarizer
 
-- Dual-provider support: OpenAI (gpt-5-nano) and HuggingFace BART
+- Dual-provider support: OpenAI and HuggingFace (`facebook/bart-large-cnn`)
 - Toggle between providers to compare outputs
-- Save summaries to database for later reference
+- Save summaries to Supabase for later reference
 
-> **Note:** the HuggingFace provider (`facebook/bart-large-cnn`) has a hard 1024-token
-> context window. Input text is truncated to the first ~3000 characters before it's
-> sent, so very long articles will be summarized from an excerpt rather than the full
-> text. The OpenAI provider has no such limit.
+> HuggingFace's BART model has a hard 1024-token context window, so input is
+> truncated to ~3000 characters before it's sent. Long articles get summarized
+> from an excerpt, not the full text. The OpenAI provider has no such limit.
 
 ### Infrastructure
 
 - Subdomain-based routing via Next.js middleware
 - Server-side Supabase client with SSR support
-- Dark/light theme with system preference detection
-- Responsive UI with Tailwind CSS v4 and Radix UI
+- Dark/light theme, no flash of the wrong theme on load
+- CI on every push/PR: lint, format check, type check, tests, then a build
 
 ---
 
@@ -40,8 +41,10 @@ A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript
 - **Framework:** Next.js 16 (App Router)
 - **UI:** React 19, Tailwind CSS v4, Radix UI
 - **Language:** TypeScript
-- **AI:** OpenAI API (gpt-5-nano), HuggingFace Inference API
+- **AI:** OpenAI API, HuggingFace Inference API (model names configurable, see below)
 - **Database:** Supabase (PostgreSQL)
+- **Testing:** Vitest, React Testing Library
+- **CI/CD:** GitHub Actions
 - **Animation:** Framer Motion, GSAP
 - **Deployment:** Vercel
 
@@ -51,10 +54,10 @@ A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 26+ (see `.nvmrc`)
 - OpenAI API key
-- Supabase project (for chat persistence and saved summaries)
-- HuggingFace API key (optional, for BART summarizer)
+- Supabase project (for chat persistence and saved summaries) — or run Supabase locally, see below
+- HuggingFace API key (optional, only needed for the HuggingFace summarizer provider)
 
 ### Setup
 
@@ -62,38 +65,24 @@ A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript
 git clone https://github.com/madfrag/ai-suite.git
 cd ai-suite
 npm install
+cp .env.example .env.local
 ```
 
-Create `.env.local`:
+Fill in `.env.local`. Everything except the Supabase and OpenAI values is optional:
 
-```env
-OPENAI_API_KEY=your_openai_key
-HUGGINGFACE_API_KEY=your_hf_key
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-```
+- `OPENAI_CHAT_MODEL` / `OPENAI_SUMMARY_MODEL` — override the model used for chat vs. summarization independently. Both fall back to `gpt-5-nano` if unset (and log a warning saying so).
+- `NEXT_PUBLIC_DB_PROVIDER` — defaults to `supabase`.
 
 ### Database
 
-Create the following tables in Supabase:
+Schema lives in `supabase/migrations/`. If you're running Supabase locally:
 
-**chatbot_messages**
+```bash
+supabase start
+supabase migration up
+```
 
-| Column          | Type                                 |
-| --------------- | ------------------------------------ |
-| id              | uuid (PK, default gen_random_uuid()) |
-| chat_session_id | text                                 |
-| role            | text                                 |
-| content         | text                                 |
-| created_at      | timestamptz (default now())          |
-
-**summaries**
-
-| Column     | Type                                 |
-| ---------- | ------------------------------------ |
-| id         | uuid (PK, default gen_random_uuid()) |
-| original   | text                                 |
-| summary    | text                                 |
-| created_at | timestamptz (default now())          |
+That gets you `chatbot_messages`, `articles_summary`, and `chat_session_summary`, all with RLS policies scoping rows to the authenticated (anonymous) user. If you're pointing at a hosted Supabase project instead, push the same migrations with `supabase db push`.
 
 ### Run
 
@@ -103,6 +92,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Other scripts
+
+```bash
+npm run lint          # eslint
+npm run format        # prettier --write
+npm run format:check  # prettier --check
+npm run type-check    # tsc --noEmit
+npm run test          # vitest run
+npm run build         # production build
+```
+
 ---
 
 ## Project Structure
@@ -111,7 +111,7 @@ Open [http://localhost:3000](http://localhost:3000).
 src/
 ├── app/
 │   ├── api/
-│   │   ├── chat/          # Chat send & history endpoints
+│   │   ├── chat/          # Chat send, history, and session-preview endpoints
 │   │   ├── summarize/     # Multi-provider summarization
 │   │   └── save-summary/  # Persist summaries to Supabase
 │   ├── chatbot/           # Chat UI with dynamic sessions
@@ -129,7 +129,6 @@ src/
 
 ## Roadmap
 
-- [ ] Streaming responses (SSE / Vercel AI SDK)
 - [ ] Resume analyzer
 - [ ] Image caption generator
 

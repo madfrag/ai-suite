@@ -1,7 +1,7 @@
 // app/api/chat/send/route.ts
 import OpenAI from 'openai';
 import { chatbotMessagesServer } from '@/lib/chatbot/messages.server';
-import { SYSTEM_PROMPT } from '@/lib/consts';
+import { OPENAI_CHAT_MODEL, SYSTEM_PROMPT } from '@/lib/consts';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       const response = await openai.responses.create({
-        model: 'gpt-5-nano',
+        model: OPENAI_CHAT_MODEL,
         input: [
           { role: 'system', content: SYSTEM_PROMPT ?? '' },
           ...history.map((m) => ({ role: m.role, content: m.content })),

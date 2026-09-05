@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { OPENAI_SUMMARY_MODEL } from '@/lib/consts';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
 
 async function summarizeWithOpenAI(text: string) {
   const response = await openai.responses.create({
-    model: 'gpt-5-nano',
+    model: OPENAI_SUMMARY_MODEL,
     input: `Summarize this in 5 bullet points:\n\n${text}`,
   });
 
