@@ -25,10 +25,18 @@ and engineering tradeoffs.
 
 Project context:
 - Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, Supabase
-- Features: streaming chatbot with persistent history, multi-provider text
+- Features: streaming chatbot with persistent history and multiple sessions
+  (new-chat button, previous sessions lazy-load on demand), multi-provider text
   summarizer (OpenAI + HuggingFace BART)
-- Architecture: server-side API routes, Supabase for persistence, 
+- Architecture: server-side API routes, Supabase for persistence,
   anonymous user identification, subdomain routing via middleware
+- Chat context management: once a session passes 5 messages, older messages
+  get compressed into a rolling summary (stored in Supabase, refreshed every
+  5 messages) and sent alongside the last 5 raw messages instead of the full
+  history, keeping token usage bounded on long conversations
+- Configuration: the OpenAI models used for chat and summarization are each
+  set via an env var (OPENAI_CHAT_MODEL / OPENAI_SUMMARY_MODEL), defaulting
+  to gpt-5-nano if unset
 - In progress: resume analyzer, image caption generator
 
 Response style:

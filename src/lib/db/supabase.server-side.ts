@@ -45,15 +45,30 @@ export const supabaseDb = {
     return await supabase.from('chatbot_messages').delete().eq('chat_session_id', chatSessionId);
   },
 
-  async insertChatSummary({ chatSessionId, summary }: { chatSessionId: string; summary: string }) {
+  async getChatSummary(chatSessionId: string) {
     const supabase = await getServerSupabaseClient();
+    return await supabase
+      .from('chat_session_summary')
+      .select('content')
+      .eq('chat_session_id', chatSessionId)
+      .maybeSingle();
+  },
+
+  async upsertChatSummary({ chatSessionId, content }: { chatSessionId: string; content: string }) {
+    const supabase = await getServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
       .from('chat_session_summary')
-      .insert([{ chat_session_id: chatSessionId, summary }])
+      .upsert([{ chat_session_id: chatSessionId, content, user_id: user?.id }], {
+        onConflict: 'user_id,chat_session_id',
+      })
       .select();
 
     if (error) {
-      console.error('Error inserting chat summary:', error);
+      console.error('Error saving chat summary:', error);
       throw new Error(error.message);
     }
 

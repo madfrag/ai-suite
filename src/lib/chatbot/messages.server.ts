@@ -34,4 +34,14 @@ export const chatbotMessagesServer = {
     }
     return data;
   },
+
+  async getChatSummary(chatSessionId: string) {
+    const { data, error } = await serverDb.getChatSummary(chatSessionId);
+    if (error) throw new Error(error.message);
+    return data?.content ?? null;
+  },
+
+  async saveChatSummary({ chatSessionId, content }: { chatSessionId: string; content: string }) {
+    await serverDb.upsertChatSummary({ chatSessionId, content });
+  },
 };

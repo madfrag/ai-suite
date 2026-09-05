@@ -1,5 +1,5 @@
-.thinking {
-  --w: 10ch;
+.thinking,
+.summarizing {
   font-weight: bold;
   font-family: monospace;
   font-size: 14px;
@@ -17,11 +17,23 @@
     calc(-6 * var(--w)) 0,
     calc(-7 * var(--w)) 0,
     calc(-8 * var(--w)) 0,
-    calc(-9 * var(--w)) 0;
+    calc(-9 * var(--w)) 0,
+    calc(-10 * var(--w)) 0,
+    calc(-11 * var(--w)) 0,
+    calc(-12 * var(--w)) 0;
   animation: l16 2s infinite;
+}
+.thinking {
+  --w: 10ch;
 }
 .thinking:before {
   content: 'Thinking..';
+}
+.summarizing {
+  --w: 13ch;
+}
+.summarizing:before {
+  content: 'Summarizing..';
 }
 @keyframes l16 {
   20% {
@@ -34,7 +46,10 @@
       calc(-6 * var(--w)) 0,
       calc(-7 * var(--w)) 0,
       calc(-8 * var(--w)) 0 var(--success),
-      calc(-9 * var(--w)) 0;
+      calc(-9 * var(--w)) 0,
+      calc(-10 * var(--w)) 0,
+      calc(-11 * var(--w)) 0,
+      calc(-12 * var(--w)) 0;
   }
   40% {
     text-shadow:
@@ -46,7 +61,10 @@
       calc(-6 * var(--w)) 0 var(--warning),
       calc(-7 * var(--w)) 0,
       calc(-8 * var(--w)) 0 var(--success),
-      calc(-9 * var(--w)) 0;
+      calc(-9 * var(--w)) 0,
+      calc(-10 * var(--w)) 0,
+      calc(-11 * var(--w)) 0,
+      calc(-12 * var(--w)) 0;
   }
   60% {
     text-shadow:
@@ -58,7 +76,10 @@
       calc(-6 * var(--w)) 0,
       calc(-7 * var(--w)) 0 var(--accent),
       calc(-8 * var(--w)) 0 var(--warning),
-      calc(-9 * var(--w)) 0 var(--primary);
+      calc(-9 * var(--w)) 0 var(--primary),
+      calc(-10 * var(--w)) 0,
+      calc(-11 * var(--w)) 0,
+      calc(-12 * var(--w)) 0;
   }
   80% {
     text-shadow:
@@ -70,7 +91,10 @@
       calc(-6 * var(--w)) 0,
       calc(-7 * var(--w)) 0 var(--muted-foreground),
       calc(-8 * var(--w)) 0 var(--muted),
-      calc(-9 * var(--w)) 0;
+      calc(-9 * var(--w)) 0,
+      calc(-10 * var(--w)) 0,
+      calc(-11 * var(--w)) 0,
+      calc(-12 * var(--w)) 0;
   }
 }
 .waiting {

@@ -37,6 +37,7 @@ export default function ChatUI() {
   const [isOpen, setIsOpen] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isReasoning, setIsReasoning] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const handleCopy = (content: string, idx: number) => {
@@ -56,6 +57,7 @@ export default function ChatUI() {
       setLoading(false);
       setIsStreaming(false);
       setIsReasoning(false);
+      setIsSummarizing(false);
       const res = await fetch(`/api/chat/history?chatSessionId=${chatSessionId}`);
       if (!res.ok) {
         const systemMessage = {
@@ -146,6 +148,14 @@ export default function ChatUI() {
 
           case 'response.completed':
             setIsStreaming(false);
+            break;
+
+          case 'summary.started':
+            setIsSummarizing(true);
+            break;
+
+          case 'summary.completed':
+            setIsSummarizing(false);
             break;
         }
       }
@@ -244,6 +254,7 @@ export default function ChatUI() {
             className={`ml-5 min-h-5 flex items-center ${!loading && !isStreaming ? 'invisible' : ''}`}
           >
             {loading && <div className="waiting" />}
+            {isSummarizing && <div className="summarizing" />}
             {isReasoning && <div className="thinking" />}
           </div>
           <div ref={bottomRef} />
