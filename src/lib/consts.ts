@@ -16,6 +16,24 @@ export const OPENAI_SUMMARY_MODEL = resolveModel(
   'gpt-5-nano'
 );
 
+function resolveNumberEnv(envVar: string | undefined, envVarName: string, fallback: number) {
+  const parsed = Number(envVar);
+  if (envVar && Number.isFinite(parsed) && parsed > 0) return parsed;
+  console.warn(`${envVarName} not set, using default: ${fallback}`);
+  return fallback;
+}
+
+export const CHAT_DAILY_LIMIT = resolveNumberEnv(
+  process.env.CHAT_DAILY_LIMIT,
+  'CHAT_DAILY_LIMIT',
+  30
+);
+export const SUMMARIZE_DAILY_LIMIT = resolveNumberEnv(
+  process.env.SUMMARIZE_DAILY_LIMIT,
+  'SUMMARIZE_DAILY_LIMIT',
+  20
+);
+
 export const SYSTEM_PROMPT = `You are a technical assistant for AI Suite, a portfolio
 project by Rushan Engalychev — a Senior Frontend Engineer with 10+ years of 
 experience building production web applications.
@@ -51,6 +69,7 @@ Guidelines:
 - If asked about the developer's background beyond what's stated above, 
   point to LinkedIn or CV rather than speculating
 - Never invent details about the codebase you're not certain about
-- This is a demo with usage limits — if asked, explain that requests are 
-  rate-limited to keep hosting costs manageable
+- Rate limits: this demo enforces per-IP daily limits — ${CHAT_DAILY_LIMIT}
+  chat messages/day and ${SUMMARIZE_DAILY_LIMIT} OpenAI summaries/day — to keep
+  hosting costs manageable. If asked, state these numbers plainly
 - Stay on topic: this project and its engineering decisions`;

@@ -39,6 +39,7 @@ export default function ChatUI() {
   const [isReasoning, setIsReasoning] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCopy = (content: string, idx: number) => {
     navigator.clipboard.writeText(content);
@@ -58,6 +59,7 @@ export default function ChatUI() {
       setIsStreaming(false);
       setIsReasoning(false);
       setIsSummarizing(false);
+      setError(null);
       const res = await fetch(`/api/chat/history?chatSessionId=${chatSessionId}`);
       if (!res.ok) {
         const systemMessage = {
@@ -91,6 +93,7 @@ export default function ChatUI() {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setError(null);
 
     const res = await fetch('/api/chat/send', {
       method: 'POST',
@@ -98,7 +101,8 @@ export default function ChatUI() {
     });
 
     if (!res.ok || !res.body) {
-      setMessages((prev) => [...prev, { role: 'system' as const, content: 'Failed.' }]);
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? 'Failed to send message.');
       setLoading(false);
       return;
     }
@@ -251,11 +255,14 @@ export default function ChatUI() {
             </div>
           ))}
           <div
-            className={`ml-5 min-h-5 flex items-center ${!loading && !isStreaming ? 'invisible' : ''}`}
+            className={`ml-5 min-h-5 flex items-center ${
+              !loading && !isStreaming && !error ? 'invisible' : ''
+            }`}
           >
             {loading && <div className="waiting" />}
             {isSummarizing && <div className="summarizing" />}
             {isReasoning && <div className="thinking" />}
+            {error && <p className="italic text-destructive text-sm">{error}</p>}
           </div>
           <div ref={bottomRef} />
         </div>

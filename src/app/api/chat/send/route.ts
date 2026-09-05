@@ -1,8 +1,10 @@
 // app/api/chat/send/route.ts
+import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { chatbotMessagesServer } from '@/lib/chatbot/messages.server';
-import { OPENAI_CHAT_MODEL, SYSTEM_PROMPT } from '@/lib/consts';
+import { CHAT_DAILY_LIMIT, OPENAI_CHAT_MODEL, SYSTEM_PROMPT } from '@/lib/consts';
 import { isOverThreshold, RECENT_WINDOW, shouldRefreshSummary } from '@/lib/chatbot/summarize';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -17,6 +19,19 @@ async function summarizeMessages(messages: { role: string; content: string }[]) 
 }
 
 export async function POST(req: Request) {
+  const { allowed } = await checkRateLimit({
+    ipAddress: getClientIp(req),
+    endpoint: 'chat',
+    limit: CHAT_DAILY_LIMIT,
+  });
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: `Daily message limit reached (${CHAT_DAILY_LIMIT}/day). Try again tomorrow.` },
+      { status: 429 }
+    );
+  }
+
   const { content, chatSessionId } = await req.json();
 
   await chatbotMessagesServer.addUserMessage({ content, chatSessionId });

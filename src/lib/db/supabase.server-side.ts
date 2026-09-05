@@ -74,4 +74,12 @@ export const supabaseDb = {
 
     return data;
   },
+
+  async incrementRateLimit({ ipAddress, endpoint }: { ipAddress: string; endpoint: string }) {
+    const supabase = await getServerSupabaseClient();
+    return await supabase.rpc('increment_rate_limit', {
+      p_ip_address: ipAddress,
+      p_endpoint: endpoint,
+    });
+  },
 };
