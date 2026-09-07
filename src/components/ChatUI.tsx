@@ -250,7 +250,7 @@ export default function ChatUI() {
               </div>
               {/* Fade active only while the last assistant message is streaming */}
               {msg.role === 'assistant' && isStreaming && idx === messages.length - 1 && (
-                <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-foreground/5 to-transparent rounded-b-md pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-[linear-gradient(to_bottom,transparent,var(--card))] rounded-b-md pointer-events-none" />
               )}
             </div>
           ))}

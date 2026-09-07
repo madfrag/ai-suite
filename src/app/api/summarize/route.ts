@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { OPENAI_SUMMARY_MODEL } from '@/lib/consts';
+import { OPENAI_SUMMARY_MODEL, SUMMARIZE_DAILY_LIMIT } from '@/lib/consts';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 // bart-large-cnn has a hard 1024-token context window and errors out past it,
 // so longer articles need to be cut down before we send them.
 const HUGGINGFACE_MAX_INPUT_CHARS = 3000;
+
+class UpstreamRateLimitError extends Error {}
 
 export async function POST(req: Request) {
   const { text, provider } = await req.json();
@@ -19,6 +22,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unknown provider.' }, { status: 400 });
   }
 
+  if (provider === 'openai') {
+    const { allowed } = await checkRateLimit({
+      ipAddress: getClientIp(req),
+      endpoint: 'summarize',
+      limit: SUMMARIZE_DAILY_LIMIT,
+    });
+
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error: `Daily summary limit reached (${SUMMARIZE_DAILY_LIMIT}/day). Try again tomorrow.`,
+        },
+        { status: 429 }
+      );
+    }
+  }
+
   try {
     const summaryText =
       provider === 'openai'
@@ -28,6 +48,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ summaryText });
   } catch (err) {
     console.error('Summarize error:', err);
+
+    if (err instanceof UpstreamRateLimitError) {
+      return NextResponse.json({ error: err.message }, { status: 429 });
+    }
+
     return NextResponse.json({ error: 'Failed to generate summary.' }, { status: 502 });
   }
 }
@@ -53,6 +78,12 @@ async function summarizeWithHuggingFace(text: string) {
       body: JSON.stringify({ inputs: text.slice(0, HUGGINGFACE_MAX_INPUT_CHARS) }),
     }
   );
+
+  if (res.status === 429) {
+    throw new UpstreamRateLimitError(
+      'HuggingFace is rate-limiting requests right now. Try again in a bit, or switch to the OpenAI provider.'
+    );
+  }
 
   if (!res.ok) {
     throw new Error(`HuggingFace request failed with status ${res.status}`);
