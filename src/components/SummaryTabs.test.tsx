@@ -9,6 +9,15 @@ function mockFetchOnce(response: { ok: boolean; body: unknown }) {
   });
 }
 
+function renderWithText(text: string) {
+  render(<SummaryTabs openaiDailyLimit={20} />);
+  if (text) {
+    fireEvent.change(screen.getByPlaceholderText('Paste or write your content here...'), {
+      target: { value: text },
+    });
+  }
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -17,7 +26,7 @@ describe('SummaryTabs', () => {
   it('does nothing when the text is empty', () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    render(<SummaryTabs text="  " />);
+    renderWithText('  ');
 
     fireEvent.click(screen.getByRole('button', { name: /summarize/i }));
     expect(fetchMock).not.toHaveBeenCalled();
@@ -25,7 +34,7 @@ describe('SummaryTabs', () => {
 
   it('shows the summary on success', async () => {
     vi.stubGlobal('fetch', mockFetchOnce({ ok: true, body: { summaryText: 'a short summary' } }));
-    render(<SummaryTabs text="some article text" />);
+    renderWithText('some article text');
 
     fireEvent.click(screen.getByRole('button', { name: /summarize/i }));
     expect(await screen.findByText('a short summary')).toBeInTheDocument();
@@ -33,7 +42,7 @@ describe('SummaryTabs', () => {
 
   it('shows an error message when the request fails', async () => {
     vi.stubGlobal('fetch', mockFetchOnce({ ok: false, body: { error: 'Text is required.' } }));
-    render(<SummaryTabs text="some article text" />);
+    renderWithText('some article text');
 
     fireEvent.click(screen.getByRole('button', { name: /summarize/i }));
     expect(await screen.findByText('Text is required.')).toBeInTheDocument();
@@ -45,7 +54,7 @@ describe('SummaryTabs', () => {
       .mockResolvedValueOnce({ ok: true, json: async () => ({ summaryText: 'a short summary' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ message: 'Saved.' }) });
     vi.stubGlobal('fetch', fetchMock);
-    render(<SummaryTabs text="some article text" />);
+    renderWithText('some article text');
 
     fireEvent.click(screen.getByRole('button', { name: /summarize/i }));
     await screen.findByText('a short summary');
@@ -53,5 +62,10 @@ describe('SummaryTabs', () => {
     fireEvent.click(screen.getByRole('button', { name: /save summary/i }));
     expect(await screen.findByText('Saved.')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows the OpenAI daily limit', () => {
+    renderWithText('');
+    expect(screen.getByText(/limited to 20\/day/i)).toBeInTheDocument();
   });
 });

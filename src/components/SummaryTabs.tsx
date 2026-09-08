@@ -6,7 +6,8 @@ import SummarizeButton from './SummarizeButton';
 import SaveButton from './SaveButton';
 import SummaryCard from './SummaryCard';
 
-export default function SummaryTabs({ text }: { text: string }) {
+export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: number }) {
+  const [text, setText] = useState('');
   const [provider, setProvider] = useState<'huggingface' | 'openai'>('huggingface');
   const [results, setResults] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,19 @@ export default function SummaryTabs({ text }: { text: string }) {
   };
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className="space-y-6">
+      <div className="space-y-4 bg-card text-card-foreground border border-border rounded-xl p-6 shadow">
+        <label className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+          Input Text
+        </label>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Paste or write your content here..."
+          className="w-full min-h-[180px] p-4 text-sm rounded-md bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      </div>
+
       {/* Toggle Switch Area */}
       <div className="flex items-center gap-4 bg-card border border-border rounded-md p-4 shadow-sm">
         <span className="text-sm font-medium text-muted-foreground">
@@ -75,6 +88,12 @@ export default function SummaryTabs({ text }: { text: string }) {
         />
         <span className="text-sm font-medium text-muted-foreground">OpenAI (Bullet Points)</span>
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        OpenAI summaries are limited to {openaiDailyLimit}/day per visitor. HuggingFace has no daily
+        cap here, but it&apos;s a free-tier API and may rate-limit on its own — you&apos;ll see a
+        message if that happens.
+      </p>
 
       {/* Action Buttons */}
       <div className="flex gap-4">

@@ -10,6 +10,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 const HUGGINGFACE_MAX_INPUT_CHARS = 3000;
 
 class UpstreamRateLimitError extends Error {}
+class UnsupportedInputError extends Error {}
 
 export async function POST(req: Request) {
   const { text, provider } = await req.json();
@@ -53,6 +54,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: err.message }, { status: 429 });
     }
 
+    if (err instanceof UnsupportedInputError) {
+      return NextResponse.json({ error: err.message }, { status: 422 });
+    }
+
     return NextResponse.json({ error: 'Failed to generate summary.' }, { status: 502 });
   }
 }
@@ -86,7 +91,18 @@ async function summarizeWithHuggingFace(text: string) {
   }
 
   if (!res.ok) {
-    throw new Error(`HuggingFace request failed with status ${res.status}`);
+    const body = await res.json().catch(() => null);
+
+    // bart-large-cnn is English-only and has a hard 1024-token window. Non-Latin
+    // scripts tokenize far denser than English, so text well under our character
+    // limit above can still overflow it — this is the model's own error for that.
+    if (body?.error?.includes('index out of range')) {
+      throw new UnsupportedInputError(
+        "HuggingFace's model couldn't process this text — it works best with shorter, English-language input. Try trimming it or switching to the OpenAI provider."
+      );
+    }
+
+    throw new Error(`HuggingFace request failed with status ${res.status}: ${body?.error}`);
   }
 
   const data = await res.json();

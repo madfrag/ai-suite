@@ -23,7 +23,7 @@ type SessionPreview = {
   created_at: string;
 };
 
-export default function ChatUI() {
+export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   const params = useParams();
   const router = useRouter();
 
@@ -285,6 +285,10 @@ export default function ChatUI() {
           </button>
         </div>
       </div>
+
+      <p className="text-xs text-muted-foreground text-center mt-2">
+        Demo — limited to {dailyLimit} messages/day per visitor.
+      </p>
     </div>
   );
 }

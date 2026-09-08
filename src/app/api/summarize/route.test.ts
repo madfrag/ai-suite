@@ -41,4 +41,19 @@ describe('POST /api/summarize', () => {
     expect(res.status).toBe(429);
     expect((await res.json()).error).toMatch(/rate-limiting/i);
   });
+
+  it('surfaces a clear message when HuggingFace cannot tokenize the input', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({ error: 'index out of range in self' }),
+      })
+    );
+
+    const res = await POST(postRequest({ text: 'hello world', provider: 'huggingface' }));
+    expect(res.status).toBe(422);
+    expect((await res.json()).error).toMatch(/couldn't process this text/i);
+  });
 });
