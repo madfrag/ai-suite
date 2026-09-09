@@ -48,7 +48,7 @@ describe('SummaryTabs', () => {
     expect(await screen.findByText('Text is required.')).toBeInTheDocument();
   });
 
-  it('saves the summary and shows a confirmation', async () => {
+  it('saves the summary and updates the save button', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ summaryText: 'a short summary' }) })
@@ -59,13 +59,86 @@ describe('SummaryTabs', () => {
     fireEvent.click(screen.getByRole('button', { name: /summarize/i }));
     await screen.findByText('a short summary');
 
-    fireEvent.click(screen.getByRole('button', { name: /save summary/i }));
-    expect(await screen.findByText('Saved.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+    expect(await screen.findByRole('button', { name: /^saved$/i })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      '/api/save-summary',
+      expect.objectContaining({
+        body: JSON.stringify({
+          original: 'some article text',
+          summary: 'a short summary',
+          provider: 'huggingface',
+        }),
+      })
+    );
   });
 
   it('shows the OpenAI daily limit', () => {
     renderWithText('');
     expect(screen.getByText(/limited to 20\/day/i)).toBeInTheDocument();
+  });
+
+  it('lazy-loads previous summaries only when the accordion is opened', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        summaries: [
+          {
+            id: '1',
+            original: 'an old article',
+            summary: 'an old summary',
+            provider: 'openai',
+            created_at: '',
+          },
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    renderWithText('');
+
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('Previous Summaries'));
+    expect(await screen.findByText(/an old article/)).toBeInTheDocument();
+    expect(screen.getAllByText('OpenAI').length).toBeGreaterThan(0);
+    expect(fetchMock).toHaveBeenCalledWith('/api/summaries');
+  });
+
+  it('loads a previous summary into a read-only view with no summarize/save controls', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        summaries: [
+          {
+            id: '1',
+            original: 'an old article',
+            summary: 'an old summary',
+            provider: 'openai',
+            created_at: '',
+          },
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    renderWithText('');
+
+    fireEvent.click(screen.getByText('Previous Summaries'));
+    fireEvent.click(await screen.findByText(/an old article/));
+
+    const originalBox = await screen.findByDisplayValue('an old article');
+    expect(originalBox).toHaveAttribute('readonly');
+    expect(screen.getByText('an old summary')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /summarize/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^save$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /copy summary/i })).toBeInTheDocument();
+
+    const writeText = vi.fn();
+    Object.assign(navigator, { clipboard: { writeText } });
+    fireEvent.click(screen.getByRole('button', { name: /copy original text/i }));
+    expect(writeText).toHaveBeenCalledWith('an old article');
+
+    fireEvent.click(screen.getByRole('button', { name: /new summary/i }));
+    expect(await screen.findByRole('button', { name: /summarize/i })).toBeInTheDocument();
   });
 });

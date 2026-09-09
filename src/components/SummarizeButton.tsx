@@ -8,8 +8,9 @@ export default function SummarizeButton({ onClick, loading }: Props) {
     <button
       onClick={onClick}
       disabled={loading}
-      className="bg-primary text-primary-foreground px-6 py-2 rounded uppercase text-sm tracking-wide hover:opacity-90 transition"
+      className="bg-primary text-primary-foreground px-6 py-2 rounded uppercase text-sm tracking-wide hover:opacity-90 transition inline-flex items-center gap-4"
     >
+      {loading && <span className="waiting" />}
       {loading ? 'Summarizing...' : 'Summarize'}
     </button>
   );

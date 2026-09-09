@@ -98,7 +98,7 @@
   }
 }
 .waiting {
-  --_dim: color-mix(in srgb, var(--foreground) 15%, transparent);
+  --_dim: color-mix(in srgb, currentColor 15%, transparent);
   width: 8px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -107,26 +107,26 @@
 @keyframes l5 {
   0% {
     box-shadow:
-      12px 0 var(--foreground),
+      12px 0 currentColor,
       -12px 0 var(--_dim);
-    background: var(--foreground);
+    background: currentColor;
   }
   33% {
     box-shadow:
-      12px 0 var(--foreground),
+      12px 0 currentColor,
       -12px 0 var(--_dim);
     background: var(--_dim);
   }
   66% {
     box-shadow:
       12px 0 var(--_dim),
-      -12px 0 var(--foreground);
+      -12px 0 currentColor;
     background: var(--_dim);
   }
   100% {
     box-shadow:
       12px 0 var(--_dim),
-      -12px 0 var(--foreground);
-    background: var(--foreground);
+      -12px 0 currentColor;
+    background: currentColor;
   }
 }

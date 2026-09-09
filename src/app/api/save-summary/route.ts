@@ -2,10 +2,17 @@ import { getServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { original, summary } = await req.json();
+  const { original, summary, provider } = await req.json();
+
+  if (provider !== 'openai' && provider !== 'huggingface') {
+    return NextResponse.json({ error: 'Unknown provider.' }, { status: 400 });
+  }
+
   const supabase = await getServerSupabaseClient();
 
-  const { error } = await supabase.from('summaries').insert([{ original, summary }]);
+  const { error } = await supabase
+    .from('articles_summary')
+    .insert([{ original, summary, provider }]);
 
   if (error) {
     console.error('Supabase insert error:', error);
