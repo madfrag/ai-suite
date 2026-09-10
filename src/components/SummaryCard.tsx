@@ -28,7 +28,7 @@ export default function SummaryCard({ title, content, onSave, saved }: SummaryCa
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={handleCopy}
-            className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity"
+            className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
             aria-label="Copy summary"
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

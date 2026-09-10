@@ -236,7 +236,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
                 {!(isStreaming && idx === messages.length - 1) && (
                   <button
                     onClick={() => handleCopy(msg.content, idx)}
-                    className="absolute top-2 right-2 p-1 rounded opacity-40 hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 p-1 rounded opacity-40 hover:opacity-100 transition-opacity cursor-pointer"
                     aria-label="Copy message"
                   >
                     {copiedIdx === idx ? (

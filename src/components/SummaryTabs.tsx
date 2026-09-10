@@ -179,7 +179,7 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
               </label>
               <button
                 onClick={copyOriginal}
-                className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity"
+                className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
                 aria-label="Copy original text"
               >
                 {copiedOriginal ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
