@@ -120,7 +120,7 @@ src/
 ├── components/            # UI components (ChatUI, SummaryTabs, etc.)
 ├── lib/
 │   ├── db/                # Database abstraction layer
-│   ├── supabase/          # Supabase client (server & client)
+│   ├── supabase/          # Server-only Supabase clients (RLS-scoped + admin)
 │   └── chatbot/           # Chat message service
 └── middleware.ts          # Subdomain routing
 ```

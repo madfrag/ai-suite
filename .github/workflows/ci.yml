@@ -62,5 +62,5 @@ jobs:
           # Actual secrets live only in a hosting environment variables.
           OPENAI_API_KEY: ci-placeholder
           HUGGINGFACE_API_KEY: ci-placeholder
-          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: ci-placeholder

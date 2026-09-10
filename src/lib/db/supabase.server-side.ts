@@ -1,4 +1,5 @@
 import { getServerSupabaseClient } from '@/lib/supabase/server';
+import { getAdminSupabaseClient } from '@/lib/supabase/admin';
 
 export const supabaseDb = {
   async insertMessage({
@@ -76,7 +77,11 @@ export const supabaseDb = {
   },
 
   async incrementRateLimit({ ipAddress, endpoint }: { ipAddress: string; endpoint: string }) {
-    const supabase = await getServerSupabaseClient();
+    // Uses the service-role client deliberately: this table isn't scoped to a
+    // user, and the RPC's EXECUTE grant is now restricted to service_role only
+    // (see the 20260909000000 migration) so a caller with just the publishable
+    // key can't invoke it with an arbitrary IP.
+    const supabase = getAdminSupabaseClient();
     return await supabase.rpc('increment_rate_limit', {
       p_ip_address: ipAddress,
       p_endpoint: endpoint,
