@@ -4,7 +4,7 @@
 
 A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript. Currently ships a streaming chatbot with persistent history and a multi-provider text summarizer.
 
-**Live demo:** not deployed yet.
+**Live demo:** <https://ai-suite-seven.vercel.app/>
 
 ---
 
