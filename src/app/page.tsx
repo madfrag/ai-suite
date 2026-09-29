@@ -2,6 +2,13 @@
 
 import Link from 'next/link';
 import { FileText, FileSearch, Bot, Image as ImageIcon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const GITHUB_URL = 'https://github.com/madfrag/ai-suite';
 
@@ -46,6 +53,23 @@ export default function Home() {
                 <tool.icon className="w-8 h-8 text-primary" />
                 <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
+                {tool.howItWorks && (
+                  <Dialog>
+                    <DialogTrigger className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground underline underline-offset-2 cursor-pointer">
+                      How it works
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>{tool.title}</DialogTitle>
+                      </DialogHeader>
+                      <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
+                        {tool.howItWorks.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
               <Link
                 href={tool.link}
@@ -103,6 +127,12 @@ const tools = [
     link: '/summarizer',
     icon: FileText,
     available: true,
+    howItWorks: [
+      'Pick a provider: OpenAI (GPT) for a 5-bullet-point summary, or Hugging Face (BART) for a short abstractive summary.',
+      'Long input is trimmed before it reaches Hugging Face, since bart-large-cnn has a hard 1024-token context window.',
+      'OpenAI requests are rate-limited per visitor per day; Hugging Face runs on a free-tier API with no app-side cap.',
+      'Summaries can be saved to Supabase and revisited later from the "Previous Summaries" panel.',
+    ],
   },
   {
     title: 'Resume Analyzer',
@@ -117,6 +147,12 @@ const tools = [
     link: '/chatbot',
     icon: Bot,
     available: true,
+    howItWorks: [
+      'Responses stream token-by-token from OpenAI over a single request, so replies render as they’re generated.',
+      'Sessions persist in Supabase, so a conversation can be closed and picked back up later.',
+      'Once a session passes 5 messages, the last 5 stay verbatim and everything older gets compressed into a running AI-generated summary instead of being sent in full.',
+      'That summary auto-refreshes every 5 messages, keeping the prompt small without the model losing earlier context.',
+    ],
   },
   {
     title: 'Image Caption Generator',
