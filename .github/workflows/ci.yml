@@ -44,6 +44,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
+      # The storybook vitest project (addon-vitest) launches a real
+      # Chromium via @vitest/browser-playwright to run each story's a11y
+      # checks — needs the browser binary present, same as the other jobs
+      # that use Playwright.
+      - run: npx playwright install --with-deps chromium
       - run: npm run test
 
   accessibility:
