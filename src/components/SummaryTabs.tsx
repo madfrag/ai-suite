@@ -135,7 +135,11 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
         <AccordionItem value="saved-summaries">
           <AccordionTrigger className="cursor-pointer flex justify-between items-center text-lg font-medium px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-t-lg w-full">
             <span>Previous Summaries</span>
-            {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isOpen ? (
+              <ChevronUp className="w-5 h-5" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="w-5 h-5" aria-hidden="true" />
+            )}
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
             {savedSummariesLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
@@ -174,7 +178,10 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
 
           <div className="space-y-4 bg-card text-card-foreground border border-border rounded-xl p-6 shadow">
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              <label
+                htmlFor="saved-original-text"
+                className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide"
+              >
                 Original Text
               </label>
               <button
@@ -182,10 +189,18 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
                 className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
                 aria-label="Copy original text"
               >
-                {copiedOriginal ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copiedOriginal ? (
+                  <Check className="w-4 h-4" aria-hidden="true" />
+                ) : (
+                  <Copy className="w-4 h-4" aria-hidden="true" />
+                )}
+                <span role="status" className="sr-only">
+                  {copiedOriginal ? 'Copied to clipboard' : ''}
+                </span>
               </button>
             </div>
             <textarea
+              id="saved-original-text"
               value={viewingSaved.original}
               readOnly
               className="w-full min-h-[180px] p-4 text-sm rounded-md bg-background border border-border text-foreground cursor-default"
@@ -200,10 +215,14 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
       ) : (
         <>
           <div className="space-y-4 bg-card text-card-foreground border border-border rounded-xl p-6 shadow">
-            <label className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+            <label
+              htmlFor="summarizer-input"
+              className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1"
+            >
               Input Text
             </label>
             <textarea
+              id="summarizer-input"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste or write your content here..."
@@ -213,14 +232,18 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
 
           {/* Toggle Switch Area */}
           <div className="flex items-center gap-4 bg-card border border-border rounded-md p-4 shadow-sm">
-            <span className="text-sm font-medium text-muted-foreground">
+            <span id="provider-switch-label" className="text-sm font-medium text-muted-foreground">
               HuggingFace (Short Summary)
             </span>
             <Switch
               checked={provider === 'openai'}
               onCheckedChange={(checked) => setProvider(checked ? 'openai' : 'huggingface')}
+              aria-labelledby="provider-switch-label provider-switch-label-2"
             />
-            <span className="text-sm font-medium text-muted-foreground">
+            <span
+              id="provider-switch-label-2"
+              className="text-sm font-medium text-muted-foreground"
+            >
               OpenAI (Bullet Points)
             </span>
           </div>
@@ -235,7 +258,10 @@ export default function SummaryTabs({ openaiDailyLimit }: { openaiDailyLimit: nu
 
           {/* Error Message */}
           {error && (
-            <p className="text-sm text-destructive bg-destructive/10 rounded px-3 py-2 w-fit">
+            <p
+              role="alert"
+              className="text-sm text-destructive bg-destructive/10 rounded px-3 py-2 w-fit"
+            >
               {error}
             </p>
           )}

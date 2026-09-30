@@ -5,6 +5,7 @@ import { FileText, FileSearch, Bot, Image as ImageIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -12,7 +13,11 @@ import {
 
 export default function Home() {
   return (
-    <main className="bg-background text-foreground min-h-screen font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="bg-background text-foreground min-h-screen font-sans outline-none"
+    >
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-6 py-24 border-b border-border">
         <div className="grid md:grid-cols-2 items-center gap-12">
@@ -48,8 +53,8 @@ export default function Home() {
               className="border-t-4 border-primary p-6 flex flex-col justify-between shadow-md hover:shadow-lg transition bg-card text-card-foreground"
             >
               <div className="mb-4 space-y-2">
-                <tool.icon className="w-8 h-8 text-primary" />
-                <h3 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h3>
+                <tool.icon className="w-8 h-8 text-primary" aria-hidden="true" />
+                <h2 className="text-xl font-bold uppercase tracking-wide">{tool.title}</h2>
                 <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
                 {tool.howItWorks && (
                   <Dialog>
@@ -59,6 +64,9 @@ export default function Home() {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>{tool.title}</DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Implementation details for {tool.title}
+                        </DialogDescription>
                       </DialogHeader>
                       <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
                         {tool.howItWorks.map((point) => (
@@ -79,16 +87,19 @@ export default function Home() {
           ) : (
             <div
               key={tool.title}
-              className="border-t-4 border-muted p-6 flex flex-col justify-between shadow-inner bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
+              className="border-t-4 border-muted p-6 flex flex-col justify-between shadow-inner bg-muted text-muted-foreground cursor-not-allowed"
             >
               <div className="mb-4 space-y-2">
-                <tool.icon className="w-8 h-8 text-muted-foreground" />
-                <h3 className="text-xl font-bold uppercase tracking-wide line-through">
+                <tool.icon
+                  className="w-8 h-8 text-muted-foreground opacity-70"
+                  aria-hidden="true"
+                />
+                <h2 className="text-xl font-bold uppercase tracking-wide line-through">
                   {tool.title}
-                </h3>
+                </h2>
                 <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
               </div>
-              <span className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 text-muted-foreground cursor-not-allowed opacity-70">
+              <span className="mt-4 text-sm font-semibold uppercase tracking-wide border-t border-border pt-2 text-muted-foreground cursor-not-allowed">
                 Coming Soon
               </span>
             </div>

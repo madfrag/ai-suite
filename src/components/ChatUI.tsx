@@ -171,14 +171,18 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   }, [messages]);
 
   return (
-    <div className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-screen flex flex-col text-foreground bg-background w-full">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-screen flex flex-col text-foreground bg-background w-full outline-none"
+    >
       <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <h1 className="text-3xl font-bold uppercase">AI Chatbot</h1>
         <button
           onClick={() => router.push('/chatbot/' + crypto.randomUUID())}
           className="flex items-center gap-1.5 border border-border text-foreground px-4 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4" aria-hidden="true" />
           New Chat
         </button>
       </div>
@@ -195,7 +199,11 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
         <AccordionItem value="history">
           <AccordionTrigger className="cursor-pointer flex justify-between items-center text-lg font-medium px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-t-lg w-full">
             <span>Previous Chat Sessions</span>
-            {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isOpen ? (
+              <ChevronUp className="w-5 h-5" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="w-5 h-5" aria-hidden="true" />
+            )}
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
             {sessionsLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
@@ -216,7 +224,12 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
       </Accordion>
 
       <div className="flex-1 overflow-hidden flex flex-col border border-border rounded-lg bg-card text-card-foreground shadow relative w-full">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+        <div
+          role="log"
+          aria-label="Chat messages"
+          aria-live="polite"
+          className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col"
+        >
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -238,10 +251,13 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
                     aria-label="Copy message"
                   >
                     {copiedIdx === idx ? (
-                      <Check className="w-3.5 h-3.5" />
+                      <Check className="w-3.5 h-3.5" aria-hidden="true" />
                     ) : (
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                     )}
+                    <span role="status" className="sr-only">
+                      {copiedIdx === idx ? 'Copied to clipboard' : ''}
+                    </span>
                   </button>
                 )}
                 {msg.content}
@@ -257,16 +273,41 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
               !loading && !isStreaming && !error ? 'invisible' : ''
             }`}
           >
-            {loading && <div className="waiting" />}
-            {isSummarizing && <div className="summarizing" />}
-            {isReasoning && <div className="thinking" />}
-            {error && <p className="italic text-destructive text-sm">{error}</p>}
+            <div role="status" aria-live="polite" className="flex items-center">
+              {loading && (
+                <>
+                  <div className="waiting" aria-hidden="true" />
+                  <span className="sr-only">Sending message…</span>
+                </>
+              )}
+              {isSummarizing && (
+                <>
+                  <div className="summarizing" aria-hidden="true" />
+                  <span className="sr-only">Summarizing conversation…</span>
+                </>
+              )}
+              {isReasoning && (
+                <>
+                  <div className="thinking" aria-hidden="true" />
+                  <span className="sr-only">Assistant is thinking…</span>
+                </>
+              )}
+            </div>
+            {error && (
+              <p role="alert" className="italic text-destructive text-sm">
+                {error}
+              </p>
+            )}
           </div>
           <div ref={bottomRef} />
         </div>
 
         <div className="border-t border-border p-4 flex items-center gap-2 bg-card sticky bottom-0 left-0 right-0 z-10 w-full">
+          <label htmlFor="chat-message-input" className="sr-only">
+            Message
+          </label>
           <input
+            id="chat-message-input"
             className="flex-1 border border-border rounded px-3 py-2 text-sm bg-background text-foreground placeholder:text-muted-foreground"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -287,6 +328,6 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
       <p className="text-xs text-muted-foreground text-center mt-2">
         Demo — limited to {dailyLimit} messages/day per visitor.
       </p>
-    </div>
+    </main>
   );
 }

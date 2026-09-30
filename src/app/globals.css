@@ -48,7 +48,7 @@
   --foreground: #23404a;
 
   --primary: #c1432b;
-  --primary-foreground: #f3efe7;
+  --primary-foreground: #ffffff;
 
   --secondary: #ede6d8;
   --secondary-foreground: #23404a;
@@ -81,13 +81,13 @@
   --background: #244855;
   --foreground: #fbe9d0;
 
-  --primary: #e64833;
-  --primary-foreground: #fbe9d0;
+  --primary: #d13d24;
+  --primary-foreground: #ffffff;
 
   --secondary: #874f41;
   --secondary-foreground: #fbe9d0;
 
-  --muted: #90aead;
+  --muted: #3a5763;
   --muted-foreground: #fbe9d0;
 
   --card: #2c3e45;
