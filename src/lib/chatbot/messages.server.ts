@@ -1,4 +1,5 @@
 // lib/chatbot/messages.ts
+import 'server-only';
 import { serverDb } from '@/lib/db/db.server-side';
 
 export const chatbotMessagesServer = {

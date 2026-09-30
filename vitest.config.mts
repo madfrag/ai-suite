@@ -16,6 +16,21 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        // `server-only`'s guard isn't a browser/node check — it's a custom
+        // "react-server" package export condition that only Next.js's own
+        // bundler sets for the server-component module graph (see
+        // node_modules/server-only/package.json). Outside that bundler
+        // (Vitest included) it always resolves to the throwing index.js.
+        // These tests exercise legitimately server-side code (API routes,
+        // rate-limit logic) directly, not through Next's RSC pipeline, so
+        // alias just this one package to its own no-op empty.js — safer
+        // than changing global resolve conditions, which could also flip
+        // other packages' conditional exports in ways we don't want here.
+        resolve: {
+          alias: {
+            'server-only': path.resolve(import.meta.dirname, 'node_modules/server-only/empty.js'),
+          },
+        },
         test: {
           environment: 'jsdom',
           pool: 'vmThreads',
