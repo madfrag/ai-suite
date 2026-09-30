@@ -31,7 +31,14 @@ export default function SummaryCard({ title, content, onSave, saved }: SummaryCa
             className="p-1 rounded opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
             aria-label="Copy summary"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? (
+              <Check className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <Copy className="w-4 h-4" aria-hidden="true" />
+            )}
+            <span role="status" className="sr-only">
+              {copied ? 'Copied to clipboard' : ''}
+            </span>
           </button>
           {onSave && (
             <button
@@ -39,7 +46,9 @@ export default function SummaryCard({ title, content, onSave, saved }: SummaryCa
               disabled={saved}
               className="border border-border text-foreground px-3 py-1 rounded uppercase text-xs tracking-wide hover:bg-muted transition disabled:opacity-60"
             >
-              {saved ? 'Saved' : 'Save'}
+              {/* aria-live (not role="status") — a role would exclude this text from
+                  the button's own accessible-name computation, silently naming it "". */}
+              <span aria-live="polite">{saved ? 'Saved' : 'Save'}</span>
             </button>
           )}
         </div>

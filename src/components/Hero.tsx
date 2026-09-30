@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@radix-ui/themes';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -222,6 +223,7 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-between gap-8 px-8 py-16 bg-background text-foreground overflow-hidden">
       <div
         ref={gridRef}
+        aria-hidden="true"
         className="w-full md:w-1/2 grid grid-cols-3 grid-rows-3 max-w-sm overflow-hidden relative z-10 cursor-pointer hover:gap-0"
         onMouseEnter={() => {
           animations.forEach((anim) => {
@@ -273,9 +275,14 @@ export default function HeroSection() {
         </p>
 
         <div className="hero-cta flex justify-center md:justify-start relative">
-          <Button size="3" radius="large" className="group text-lg px-6 py-3">
-            Explore My Work
-            <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
+          <Button asChild size="3" radius="large" className="group text-lg px-6 py-3">
+            <Link href="/">
+              Explore My Work
+              <ArrowRight
+                aria-hidden="true"
+                className="ml-2 transition-transform group-hover:translate-x-1"
+              />
+            </Link>
           </Button>
         </div>
       </div>

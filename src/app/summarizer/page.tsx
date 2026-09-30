@@ -3,7 +3,11 @@ import { SUMMARIZE_DAILY_LIMIT } from '@/lib/consts';
 
 export default function SummarizerPage() {
   return (
-    <main className="bg-background text-foreground min-h-screen py-16 px-4 md:px-8">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="bg-background text-foreground min-h-screen py-16 px-4 md:px-8 outline-none"
+    >
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold uppercase tracking-tight text-foreground">

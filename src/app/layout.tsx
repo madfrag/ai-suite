@@ -37,14 +37,22 @@ export default async function RootLayout({
   return (
     <html lang="en" className={isDark ? 'dark' : ''}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:border focus:border-border focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          Skip to main content
+        </a>
         <Providers>
           <header className="fixed top-0 left-0 right-0 z-50 h-12 px-6 flex items-center justify-between border-b border-border/40 bg-background/90 backdrop-blur-md">
-            <Link
-              href="/"
-              className="text-sm font-semibold uppercase tracking-widest text-foreground hover:text-primary transition-colors"
-            >
-              Home
-            </Link>
+            <nav aria-label="Primary">
+              <Link
+                href="/"
+                className="text-sm font-semibold uppercase tracking-widest text-foreground hover:text-primary transition-colors"
+              >
+                Home
+              </Link>
+            </nav>
             <ThemeToggle initialTheme={theme} />
           </header>
           {children}

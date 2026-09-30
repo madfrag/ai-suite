@@ -5,5 +5,9 @@ import Hero from '@/components/Hero';
 export const instant = false;
 
 export default function AboutPage() {
-  return <Hero />;
+  return (
+    <main id="main-content" tabIndex={-1} className="outline-none">
+      <Hero />
+    </main>
+  );
 }

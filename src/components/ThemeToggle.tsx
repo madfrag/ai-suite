@@ -19,14 +19,17 @@ export default function ThemeToggle({ initialTheme }: { initialTheme: 'light' | 
     <button
       onClick={toggleTheme}
       className="relative w-8 h-8 flex items-center justify-center rounded-md border border-border hover:bg-muted transition-colors"
-      aria-label="Toggle theme"
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+      aria-pressed={theme === 'dark'}
     >
       <Sun
+        aria-hidden="true"
         className={`absolute w-4 h-4 transition-all duration-300 ${
           theme === 'light' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-50'
         }`}
       />
       <Moon
+        aria-hidden="true"
         className={`absolute w-4 h-4 transition-all duration-300 ${
           theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'
         }`}
