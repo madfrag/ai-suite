@@ -1,0 +1,35 @@
+# Manually-triggered utility: regenerates the visual-regression baseline
+# screenshots on the same runner (ubuntu-latest) and Playwright version the
+# real visual-regression CI job uses, and uploads them as a downloadable
+# artifact for review. It does not commit anything back automatically —
+# baselines are reviewed and committed by a human after downloading, same
+# as any other source change.
+#
+# Why this exists: screenshots generated on a developer's own machine
+# (macOS, Windows, or even a different Linux distro/arch) don't reliably
+# pixel-match what ubuntu-latest renders — font hinting and anti-aliasing
+# differ by OS. Regenerating on the exact CI runner is the only fully
+# reliable way to get baselines the real job will actually match.
+name: Update visual regression baselines
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-baselines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build-storybook
+      - run: npm run test:visual:update
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: e2e-visual/__screenshots__/
+          retention-days: 7
