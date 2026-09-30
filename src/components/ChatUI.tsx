@@ -27,7 +27,10 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   const params = useParams();
   const router = useRouter();
 
-  const chatSessionId = (params?.chatSessionId as string[])?.[0] || null;
+  // The [[...chatSessionId]] page always redirects server-side to a session
+  // URL before this component ever mounts (see app/chatbot/.../page.tsx), so
+  // this is guaranteed to be present here.
+  const chatSessionId = (params?.chatSessionId as string[])[0];
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,11 +51,6 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   };
 
   useEffect(() => {
-    if (!chatSessionId) {
-      router.push('/chatbot/' + crypto.randomUUID());
-      return;
-    }
-
     const loadMessages = async () => {
       setMessages([]);
       setLoading(false);
@@ -74,7 +72,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
     };
 
     loadMessages();
-  }, [chatSessionId, router]);
+  }, [chatSessionId]);
 
   const loadSessions = async () => {
     setSessionsLoading(true);
