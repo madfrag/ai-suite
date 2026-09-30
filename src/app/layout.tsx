@@ -5,6 +5,7 @@ import Link from 'next/link';
 import './globals.css';
 import './custom.css';
 import ThemeToggle from '@/components/ThemeToggle';
+import Footer from '@/components/Footer';
 import { Providers } from '@/lib/providers';
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
@@ -47,6 +48,7 @@ export default async function RootLayout({
             <ThemeToggle initialTheme={theme} />
           </header>
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>
