@@ -1,3 +1,4 @@
+import 'server-only';
 import { supabaseDb } from './supabase.server-side';
 // import { firebaseDb } from './firebase';
 
