@@ -30,13 +30,22 @@ export default function ConsentGate({ children }: { children: React.ReactNode })
       tabIndex={-1}
       className="bg-background text-foreground flex-1 py-16 px-4 md:px-8 outline-none"
     >
-      <Dialog open={consent === 'required'}>
+      <Dialog open={consent === 'required' || consent === 'outdated'}>
         <DialogContent
           showClose={false}
           onEscapeKeyDown={(e) => e.preventDefault()}
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
+          {consent === 'outdated' && (
+            <p
+              role="note"
+              className="border-l-4 border-primary bg-muted text-foreground rounded-r px-3 py-2 text-sm font-medium"
+            >
+              We&apos;ve updated our privacy policy since you last agreed. Please review it and
+              confirm again.
+            </p>
+          )}
           <DialogHeader>
             <DialogTitle>Before you continue</DialogTitle>
             <DialogDescription>This is a demo, but it does process your data.</DialogDescription>

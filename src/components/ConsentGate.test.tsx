@@ -35,6 +35,8 @@ describe('ConsentGate', () => {
     renderGate();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    // First visit: nothing was agreed before, so no "updated" notice.
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute(
       'href',
       '/datenschutz#english'
@@ -77,7 +79,16 @@ describe('ConsentGate', () => {
     renderGate();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('note')).toHaveTextContent(/updated our privacy policy/i);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('shows no "updated" notice for an unreadable stored value', async () => {
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, 'not json');
+    renderGate();
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 
   it('declining sends the visitor home without storing anything', async () => {

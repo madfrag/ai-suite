@@ -79,6 +79,19 @@ test.describe('consent dialog', () => {
   });
 });
 
+test.describe('consent dialog — updated-policy notice', () => {
+  test('has no WCAG 2.1 AA violations with the notice shown', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('ai-suite-consent', JSON.stringify({ v: 0 }));
+    });
+    await page.goto('/summarizer', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('note')).toBeVisible();
+
+    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+    expect(results.violations, formatViolations(results.violations)).toEqual([]);
+  });
+});
+
 test.describe('keyboard navigation', () => {
   test('skip link becomes visible on focus and moves focus to main content', async ({ page }) => {
     await page.goto('/');

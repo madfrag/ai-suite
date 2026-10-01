@@ -3,7 +3,8 @@
 export const CONSENT_VERSION = 1;
 export const CONSENT_STORAGE_KEY = 'ai-suite-consent';
 
-export type ConsentStatus = 'unknown' | 'required' | 'granted';
+// 'outdated': the visitor agreed before, but to an older version of the notice.
+export type ConsentStatus = 'unknown' | 'required' | 'outdated' | 'granted';
 
 const listeners = new Set<() => void>();
 let memoryGranted = false;
@@ -12,8 +13,9 @@ export function readConsent(): Exclude<ConsentStatus, 'unknown'> {
   try {
     const raw = window.localStorage.getItem(CONSENT_STORAGE_KEY);
     if (!raw) return 'required';
-    const parsed = JSON.parse(raw) as { v?: number };
-    return parsed.v === CONSENT_VERSION ? 'granted' : 'required';
+    const parsed = JSON.parse(raw) as { v?: unknown };
+    if (parsed.v === CONSENT_VERSION) return 'granted';
+    return typeof parsed.v === 'number' ? 'outdated' : 'required';
   } catch {
     // Storage blocked or value corrupt — treat as not consented.
     return 'required';

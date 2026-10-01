@@ -2,13 +2,18 @@
 'use client';
 
 import { createContext, useEffect, useState, useSyncExternalStore } from 'react';
-import { getConsentServerSnapshot, getConsentSnapshot, subscribeConsent } from '@/lib/consent';
+import {
+  getConsentServerSnapshot,
+  getConsentSnapshot,
+  subscribeConsent,
+  type ConsentStatus,
+} from '@/lib/consent';
 
 type AuthContextValue = {
   // True until the anonymous session exists. Stays true while consent is
   // missing, because no session (and no cookie) is created before that.
   loading: boolean;
-  consent: 'unknown' | 'required' | 'granted';
+  consent: ConsentStatus;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
