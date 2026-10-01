@@ -21,7 +21,7 @@ for (const route of ['/summarizer', '/chatbot']) {
       await expect(dialog).toBeVisible();
       await expect(dialog.getByRole('link', { name: /privacy policy/i })).toHaveAttribute(
         'href',
-        '/datenschutz'
+        '/datenschutz#english'
       );
       expect(sessionRequests).toHaveLength(0);
 

@@ -55,7 +55,7 @@ export default function ConsentGate({ children }: { children: React.ReactNode })
           <p className="text-sm text-muted-foreground">
             Details in the{' '}
             <Link
-              href="/datenschutz"
+              href="/datenschutz#english"
               target="_blank"
               className="underline text-foreground hover:text-primary"
             >

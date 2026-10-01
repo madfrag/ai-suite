@@ -37,7 +37,7 @@ describe('ConsentGate', () => {
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute(
       'href',
-      '/datenschutz'
+      '/datenschutz#english'
     );
     expect(screen.queryByText('tool content')).not.toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
