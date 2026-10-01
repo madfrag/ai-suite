@@ -21,6 +21,9 @@ export default async function ChatbotPage({
   // id in ChatUI (#main-content, #chat-message-input), invalid HTML that
   // also broke id-based test locators. Redirecting before the client ever
   // renders the paramless variant avoids mounting it at all.
+  // /chatbot is normally redirected earlier, in src/proxy.ts, as a real HTTP
+  // 307 (a redirect() here is streamed in-band and was swallowed by the
+  // client router on first click). This stays as a fallback.
   if (!chatSessionId?.length) {
     redirect(`/chatbot/${crypto.randomUUID()}`);
   }

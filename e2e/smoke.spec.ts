@@ -24,6 +24,18 @@ test.describe('homepage navigation', () => {
       .click();
     await expect(page).toHaveURL(/\/summarizer$/);
   });
+
+  // /chatbot redirects to a fresh /chatbot/<uuid>. Regression: a redirect()
+  // inside the streamed render was swallowed by the client router, so the
+  // first click on the card did nothing and a second click was needed.
+  test('a single click on the chatbot Try Now lands in a chat session', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page
+      .getByRole('link', { name: /Try Now/ })
+      .nth(1)
+      .click();
+    await expect(page).toHaveURL(/\/chatbot\/[0-9a-f-]{36}$/, { timeout: 3000 });
+  });
 });
 
 test.describe('summarizer flow', () => {
