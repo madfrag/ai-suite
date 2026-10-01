@@ -174,7 +174,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
     <main
       id="main-content"
       tabIndex={-1}
-      className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-screen flex flex-col text-foreground bg-background w-full outline-none"
+      className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-0 min-h-96 flex-1 flex flex-col text-foreground bg-background w-full outline-none"
     >
       <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <h1 className="text-3xl font-bold uppercase">AI Chatbot</h1>

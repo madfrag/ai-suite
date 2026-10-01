@@ -6,7 +6,7 @@ export const instant = false;
 
 export default function LandingPage() {
   return (
-    <main>
+    <main className="flex-1">
       <ScrollSlides />
     </main>
   );

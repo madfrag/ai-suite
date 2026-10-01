@@ -16,7 +16,7 @@ export default function Home() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="bg-background text-foreground min-h-screen font-sans outline-none"
+      className="bg-background text-foreground flex-1 font-sans outline-none"
     >
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-6 py-24 border-b border-border">

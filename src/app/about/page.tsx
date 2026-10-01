@@ -6,7 +6,7 @@ export const instant = false;
 
 export default function AboutPage() {
   return (
-    <main id="main-content" tabIndex={-1} className="outline-none">
+    <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
       <Hero />
     </main>
   );

@@ -9,7 +9,7 @@ export default function DatenschutzPage() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="bg-background text-foreground min-h-screen py-16 px-4 md:px-8 outline-none"
+      className="bg-background text-foreground flex-1 py-16 px-4 md:px-8 outline-none"
     >
       <div className="max-w-3xl mx-auto space-y-12">
         <div className="space-y-4">
