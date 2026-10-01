@@ -65,9 +65,12 @@ export default function DatenschutzPage() {
               technische Zugriffsdaten (u. a. IP-Adresse, Datum/Uhrzeit des Zugriffs, aufgerufene
               Seite, Browsertyp) in Server-Logfiles, um den Betrieb der Seite technisch
               sicherzustellen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
-              Interesse an einem sicheren und funktionsfähigen Betrieb). Dabei kann es zu einer
-              Datenübermittlung in die USA (Drittland) kommen; nach Angaben von Vercel stützt sich
-              das Unternehmen hierfür auf geeignete Garantien (u. a. EU-Standardvertragsklauseln).
+              Interesse an einem sicheren und funktionsfähigen Betrieb). Die serverseitigen
+              Funktionen der Anwendung (API-Routen) werden in der EU-Region Dublin ausgeführt;
+              dennoch kann es – etwa durch die Verarbeitung von Logdaten durch Vercel selbst – zu
+              einer Datenübermittlung in die USA (Drittland) kommen; nach Angaben von Vercel stützt
+              sich das Unternehmen hierfür auf geeignete Garantien (u. a.
+              EU-Standardvertragsklauseln).
             </p>
           </section>
 
@@ -279,9 +282,11 @@ export default function DatenschutzPage() {
               access data (including IP address, date and time of access, page requested, browser
               type) in server log files in order to ensure the technical operation of the site. The
               legal basis is Art. 6 (1) (f) GDPR (legitimate interest in secure and functional
-              operation). This may involve a transfer of data to the USA (third country); according
-              to Vercel, the company relies on appropriate safeguards for this purpose (including EU
-              Standard Contractual Clauses).
+              operation). The application&apos;s server-side functions (API routes) run in the EU
+              region Dublin; a transfer of data to the USA (third country) can nevertheless occur,
+              for example through Vercel&apos;s own processing of log data; according to Vercel, the
+              company relies on appropriate safeguards for this purpose (including EU Standard
+              Contractual Clauses).
             </p>
           </section>
 
