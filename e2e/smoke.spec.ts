@@ -6,6 +6,15 @@ import { test, expect } from '@playwright/test';
 // while still exercising real client code (streaming parser, DOM updates,
 // the a11y labels wired up in e2e/a11y.spec.ts's companion fixes).
 
+// The tool pages are gated behind a consent dialog (see ConsentGate). Every
+// flow below is about the tools themselves, so start from "already agreed";
+// e2e/consent.spec.ts covers the dialog.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('ai-suite-consent', JSON.stringify({ v: 1 }));
+  });
+});
+
 test.describe('homepage navigation', () => {
   test('Try Now links route to the right tool', async ({ page }) => {
     await page.goto('/');

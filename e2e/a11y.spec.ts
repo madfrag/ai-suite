@@ -10,6 +10,11 @@ for (const theme of ['light', 'dark'] as const) {
   test.describe(`axe scan — ${theme} theme`, () => {
     for (const route of ROUTES) {
       test(`${route || '/'} has no WCAG 2.1 AA violations`, async ({ page, context }, testInfo) => {
+        // Scan the tool pages themselves, not the consent gate (scanned below).
+        await page.addInitScript(() => {
+          window.localStorage.setItem('ai-suite-consent', JSON.stringify({ v: 1 }));
+        });
+
         if (theme === 'dark') {
           await context.addCookies([
             { name: 'theme', value: 'dark', url: 'http://localhost:3000' },
@@ -63,6 +68,16 @@ for (const theme of ['light', 'dark'] as const) {
     }
   });
 }
+
+test.describe('consent dialog', () => {
+  test('has no WCAG 2.1 AA violations while open', async ({ page }) => {
+    await page.goto('/summarizer', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+    expect(results.violations, formatViolations(results.violations)).toEqual([]);
+  });
+});
 
 test.describe('keyboard navigation', () => {
   test('skip link becomes visible on focus and moves focus to main content', async ({ page }) => {

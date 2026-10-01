@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import ChatUI from '@/components/ChatUI';
+import ConsentGate from '@/components/ConsentGate';
 import { CHAT_DAILY_LIMIT } from '@/lib/consts';
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
@@ -24,5 +25,9 @@ export default async function ChatbotPage({
     redirect(`/chatbot/${crypto.randomUUID()}`);
   }
 
-  return <ChatUI dailyLimit={CHAT_DAILY_LIMIT} />;
+  return (
+    <ConsentGate>
+      <ChatUI dailyLimit={CHAT_DAILY_LIMIT} />
+    </ConsentGate>
+  );
 }

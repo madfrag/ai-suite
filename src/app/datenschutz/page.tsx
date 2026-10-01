@@ -89,12 +89,14 @@ export default function DatenschutzPage() {
                 b) Anonyme Sitzungen (Supabase Auth)
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Beim ersten Besuch wird automatisch eine anonyme, pseudonyme Sitzungs-ID erzeugt und
-                in einem Cookie im Browser gespeichert. Diese ID wird verwendet, um Chatverläufe und
-                gespeicherte Zusammenfassungen dem jeweiligen Gerät zuordnen zu können, ohne dass
-                eine Registrierung, ein Name oder eine E-Mail-Adresse erforderlich ist.
-                Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erbringung der von Ihnen angefragten
-                Funktion).
+                Wenn Sie dem Hinweis vor der Nutzung des Chatbots oder des Text-Summarizers
+                zustimmen (siehe Punkt 4g), wird eine anonyme, pseudonyme Sitzungs-ID erzeugt und in
+                einem Cookie im Browser gespeichert. Vor Ihrer Zustimmung – etwa beim bloßen Besuch
+                der Startseite – wird keine Sitzung angelegt. Diese ID wird verwendet, um
+                Chatverläufe und gespeicherte Zusammenfassungen dem jeweiligen Gerät zuordnen zu
+                können, ohne dass eine Registrierung, ein Name oder eine E-Mail-Adresse erforderlich
+                ist. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erbringung der von Ihnen
+                angefragten Funktion).
               </p>
             </div>
 
@@ -103,7 +105,7 @@ export default function DatenschutzPage() {
               <p className="text-muted-foreground leading-relaxed">
                 Ein technisch notwendiges Cookie speichert die von Ihnen gewählte Darstellung
                 (hell/dunkel). Es enthält keine personenbezogenen Daten und dient ausschließlich der
-                Funktionalität der Seite. Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TTDSG bzw. Art. 6 Abs.
+                Funktionalität der Seite. Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG bzw. Art. 6 Abs.
                 1 lit. f DSGVO — eine Einwilligung ist hierfür nicht erforderlich.
               </p>
             </div>
@@ -153,6 +155,21 @@ export default function DatenschutzPage() {
                 Picsum (picsum.photos). Dabei kann Ihre IP-Adresse an diesen Anbieter übermittelt
                 werden. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer
                 funktionsfähigen Darstellung der Seite).
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-foreground">g) Hinweis- und Zustimmungsdialog</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Vor der ersten Nutzung des Chatbots oder des Text-Summarizers werden Sie über die
+                Verarbeitung (Übermittlung an KI-Anbieter, Speicherung, Sitzungs-Cookie) informiert
+                und um Ihre Zustimmung gebeten. Ihre Entscheidung wird mit Versionsnummer und
+                Zeitpunkt im lokalen Speicher (localStorage) Ihres Browsers abgelegt, nicht auf dem
+                Server. Lehnen Sie ab, werden Sie zur Startseite geleitet und es wird nichts
+                gespeichert. Sie können die Zustimmung jederzeit widerrufen, indem Sie die
+                Website-Daten Ihres Browsers löschen; bei einer Änderung dieser Erklärung wird die
+                Zustimmung erneut abgefragt. Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO sowie, für
+                die Übermittlung in Drittländer, Art. 49 Abs. 1 lit. a DSGVO.
               </p>
             </div>
           </div>
