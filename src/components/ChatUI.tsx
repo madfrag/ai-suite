@@ -248,7 +248,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
         <Accordion
           type="single"
           collapsible
-          className="mb-6 border border-border rounded-lg shadow-sm w-full"
+          className="relative mb-6 border border-border rounded-lg shadow-sm w-full"
           onValueChange={(value) => {
             setIsOpen(!!value);
             if (value) loadSessions();
@@ -263,7 +263,9 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
                 <ChevronDown className="w-5 h-5" aria-hidden="true" />
               )}
             </AccordionTrigger>
-            <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
+            {/* Overlays the chat instead of pushing it down: the page is fixed-height,
+                so an in-flow list would squeeze the messages. */}
+            <AccordionContent className="absolute inset-x-0 top-full z-20 mt-1 p-4 space-y-3 max-h-[min(18.75rem,45dvh)] overflow-y-auto bg-card text-card-foreground rounded-lg border border-border shadow-lg">
               {sessionsLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
               {!sessionsLoading && sessions.length === 0 && (
                 <p className="text-sm text-muted-foreground">No previous chats found.</p>

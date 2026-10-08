@@ -167,6 +167,38 @@ test.describe('chatbot flow', () => {
     await expect(page.getByText('Previous Chat Sessions')).toBeVisible();
   });
 
+  test('previous sessions list scrolls on its own without squeezing the chat', async ({ page }) => {
+    await page.route('**/api/chat/sessions', (route) =>
+      route.fulfill({
+        json: {
+          sessions: Array.from({ length: 30 }, (_, i) => ({
+            chat_session_id: `s${i}`,
+            content: `Previous chat number ${i}`,
+            created_at: '',
+          })),
+        },
+      })
+    );
+
+    await page.goto('/chatbot');
+    const log = page.getByRole('log', { name: 'Chat messages' });
+    const heightBefore = await log.evaluate((el) => el.clientHeight);
+
+    await page.getByText('Previous Chat Sessions').click();
+    await expect(page.getByText('Previous chat number 0')).toBeVisible();
+
+    const { listOverflow, pageOverflow } = await page.evaluate(() => {
+      const list = document.querySelector('[role="region"]')!;
+      return {
+        listOverflow: list.scrollHeight - list.clientHeight,
+        pageOverflow: document.documentElement.scrollHeight - innerHeight,
+      };
+    });
+    expect(listOverflow).toBeGreaterThan(0);
+    expect(pageOverflow).toBeLessThanOrEqual(0);
+    expect(await log.evaluate((el) => el.clientHeight)).toBe(heightBefore);
+  });
+
   test('only the message list scrolls, not the page', async ({ page }) => {
     await page.route('**/api/chat/history*', (route) =>
       route.fulfill({
