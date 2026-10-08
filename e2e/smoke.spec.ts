@@ -141,7 +141,11 @@ test.describe('chatbot flow', () => {
     await expect(page.getByText('Previous Chat Sessions')).toBeVisible();
 
     const sessionUrl = page.url();
-    await page.getByRole('switch', { name: 'Private mode' }).click();
+    const privateSwitch = page.getByRole('switch', { name: 'Private mode' });
+    const switchX = (await privateSwitch.boundingBox())!.x;
+    await privateSwitch.click();
+    // The button label changes width (New Chat -> Clear chat); the switch must not move
+    expect((await privateSwitch.boundingBox())!.x).toBe(switchX);
     await expect(page).toHaveURL(/\/chatbot$/);
     await expect(page.getByText('Previous Chat Sessions')).toBeHidden();
     await expect(page.getByText('Private chat. Nothing is saved.')).toBeVisible();

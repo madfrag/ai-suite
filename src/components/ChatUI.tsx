@@ -217,17 +217,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
           )}
         </h1>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Switch
-              id="private-mode"
-              checked={isPrivate}
-              onCheckedChange={handlePrivateChange}
-              disabled={loading || isStreaming}
-            />
-            <label htmlFor="private-mode" className="text-sm cursor-pointer select-none">
-              Private mode
-            </label>
-          </div>
+          {/* Switch stays rightmost so it doesn't shift when the button label changes width */}
           <button
             onClick={() =>
               isPrivate ? setMessages([]) : router.push('/chatbot/' + crypto.randomUUID())
@@ -241,6 +231,17 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
             )}
             {isPrivate ? 'Clear chat' : 'New Chat'}
           </button>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Switch
+              id="private-mode"
+              checked={isPrivate}
+              onCheckedChange={handlePrivateChange}
+              disabled={loading || isStreaming}
+            />
+            <label htmlFor="private-mode" className="text-sm cursor-pointer select-none">
+              Private mode
+            </label>
+          </div>
         </div>
       </div>
 
