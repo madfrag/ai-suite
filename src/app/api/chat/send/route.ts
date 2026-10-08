@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { chatbotMessagesServer } from '@/lib/chatbot/messages.server';
 import { CHAT_DAILY_LIMIT, OPENAI_CHAT_MODEL, SYSTEM_PROMPT } from '@/lib/consts';
 import { isOverThreshold, RECENT_WINDOW, shouldRefreshSummary } from '@/lib/chatbot/summarize';
+import { parsePrivateMessages } from '@/lib/chatbot/private';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
@@ -32,10 +33,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const { content, chatSessionId } = await req.json();
+  const body = await req.json();
+  const isPrivate = body.private === true;
+  const { content, chatSessionId } = body;
 
-  await chatbotMessagesServer.addUserMessage({ content, chatSessionId });
-  const history = await chatbotMessagesServer.getChatSessionMessages(chatSessionId);
+  // Private mode: the conversation lives in the client; nothing below may
+  // read from or write to the database for these requests.
+  let history: { role: 'user' | 'assistant' | 'system'; content: string }[];
+  if (isPrivate) {
+    const privateMessages = parsePrivateMessages(body.messages);
+    if (!privateMessages) {
+      return NextResponse.json({ error: 'Invalid private chat payload.' }, { status: 400 });
+    }
+    history = privateMessages;
+  } else {
+    await chatbotMessagesServer.addUserMessage({ content, chatSessionId });
+    history = await chatbotMessagesServer.getChatSessionMessages(chatSessionId);
+  }
 
   const enc = new TextEncoder();
 
@@ -44,7 +58,9 @@ export async function POST(req: Request) {
       let summary: string | null = null;
       let contextMessages = history;
 
-      if (isOverThreshold(history.length)) {
+      // Summaries are persisted, so private chats just send the (already
+      // capped) client-side window as-is.
+      if (!isPrivate && isOverThreshold(history.length)) {
         summary = await chatbotMessagesServer.getChatSummary(chatSessionId);
 
         if (shouldRefreshSummary(history.length, !!summary)) {
@@ -92,7 +108,7 @@ export async function POST(req: Request) {
         }
 
         // Save the complete message only when the stream is fully done
-        if (event.type === 'response.completed') {
+        if (event.type === 'response.completed' && !isPrivate) {
           await chatbotMessagesServer.addAssistantMessage({ content: fullText, chatSessionId });
         }
       }

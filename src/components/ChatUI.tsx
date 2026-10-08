@@ -9,7 +9,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@radix-ui/react-accordion';
-import { ChevronDown, ChevronUp, Copy, Check, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, Check, Plus, Lock } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 type Message = {
   role: 'user' | 'assistant' | 'system';
@@ -43,6 +44,9 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Private mode keeps the conversation in this component's state only: no
+  // history fetch, and /api/chat/send is told not to touch the database.
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const handleCopy = (content: string, idx: number) => {
     navigator.clipboard.writeText(content);
@@ -58,6 +62,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
       setIsReasoning(false);
       setIsSummarizing(false);
       setError(null);
+      if (isPrivate) return;
       const res = await fetch(`/api/chat/history?chatSessionId=${chatSessionId}`);
       if (!res.ok) {
         const systemMessage = {
@@ -72,7 +77,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
     };
 
     loadMessages();
-  }, [chatSessionId]);
+  }, [chatSessionId, isPrivate]);
 
   const loadSessions = async () => {
     setSessionsLoading(true);
@@ -95,7 +100,14 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
 
     const res = await fetch('/api/chat/send', {
       method: 'POST',
-      body: JSON.stringify({ content: userMessage.content, chatSessionId }),
+      body: JSON.stringify(
+        isPrivate
+          ? {
+              private: true,
+              messages: [...messages, userMessage].filter((m) => m.role !== 'system'),
+            }
+          : { content: userMessage.content, chatSessionId }
+      ),
     });
 
     if (!res.ok || !res.body) {
@@ -174,56 +186,82 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
     <main
       id="main-content"
       tabIndex={-1}
-      className="max-w-4xl mx-auto pb-10 pt-16 px-4 h-0 min-h-96 flex-1 flex flex-col text-foreground bg-background w-full outline-none"
+      className="max-w-4xl mx-auto pb-4 pt-16 px-4 h-[calc(100dvh-2.5rem)] min-h-96 flex-none flex flex-col text-foreground bg-background w-full outline-none"
     >
       <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <h1 className="text-3xl font-bold uppercase">AI Chatbot</h1>
-        <button
-          onClick={() => router.push('/chatbot/' + crypto.randomUUID())}
-          className="flex items-center gap-1.5 border border-border text-foreground px-4 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
-        >
-          <Plus className="w-4 h-4" aria-hidden="true" />
-          New Chat
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch
+              id="private-mode"
+              checked={isPrivate}
+              onCheckedChange={setIsPrivate}
+              disabled={loading || isStreaming}
+            />
+            <label htmlFor="private-mode" className="text-sm cursor-pointer select-none">
+              Private mode
+            </label>
+          </div>
+          <button
+            onClick={() =>
+              isPrivate ? setMessages([]) : router.push('/chatbot/' + crypto.randomUUID())
+            }
+            className="flex items-center gap-1.5 border border-border text-foreground px-4 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
+          >
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            New Chat
+          </button>
+        </div>
       </div>
 
-      <Accordion
-        type="single"
-        collapsible
-        className="mb-6 border border-border rounded-lg shadow-sm w-full"
-        onValueChange={(value) => {
-          setIsOpen(!!value);
-          if (value) loadSessions();
-        }}
-      >
-        <AccordionItem value="history">
-          <AccordionTrigger className="cursor-pointer flex justify-between items-center text-lg font-medium px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-t-lg w-full">
-            <span>Previous Chat Sessions</span>
-            {isOpen ? (
-              <ChevronUp className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              <ChevronDown className="w-5 h-5" aria-hidden="true" />
-            )}
-          </AccordionTrigger>
-          <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
-            {sessionsLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
-            {!sessionsLoading && sessions.length === 0 && (
-              <p className="text-sm text-muted-foreground">No previous chats found.</p>
-            )}
-            {sessions.map((session) => (
-              <Link
-                key={session.chat_session_id}
-                href={`/chatbot/${session.chat_session_id}`}
-                className="block border border-border rounded-md p-3 bg-background text-foreground hover:bg-muted transition w-full"
-              >
-                <p className="truncate text-sm text-muted-foreground">{session.content}</p>
-              </Link>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {isPrivate ? (
+        <p
+          role="note"
+          className="mb-6 flex items-center gap-2 border border-border rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground"
+        >
+          <Lock className="w-4 h-4 shrink-0" aria-hidden="true" />
+          Private mode: nothing is saved. This chat disappears when you reload, leave the page or
+          turn private mode off.
+        </p>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          className="mb-6 border border-border rounded-lg shadow-sm w-full"
+          onValueChange={(value) => {
+            setIsOpen(!!value);
+            if (value) loadSessions();
+          }}
+        >
+          <AccordionItem value="history">
+            <AccordionTrigger className="cursor-pointer flex justify-between items-center text-lg font-medium px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-t-lg w-full">
+              <span>Previous Chat Sessions</span>
+              {isOpen ? (
+                <ChevronUp className="w-5 h-5" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="w-5 h-5" aria-hidden="true" />
+              )}
+            </AccordionTrigger>
+            <AccordionContent className="p-4 space-y-3 max-h-75 overflow-y-auto bg-card text-card-foreground rounded-b-lg border-t border-border w-full">
+              {sessionsLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+              {!sessionsLoading && sessions.length === 0 && (
+                <p className="text-sm text-muted-foreground">No previous chats found.</p>
+              )}
+              {sessions.map((session) => (
+                <Link
+                  key={session.chat_session_id}
+                  href={`/chatbot/${session.chat_session_id}`}
+                  className="block border border-border rounded-md p-3 bg-background text-foreground hover:bg-muted transition w-full"
+                >
+                  <p className="truncate text-sm text-muted-foreground">{session.content}</p>
+                </Link>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
 
-      <div className="flex-1 overflow-hidden flex flex-col border border-border rounded-lg bg-card text-card-foreground shadow relative w-full">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col border border-border rounded-lg bg-card text-card-foreground shadow relative w-full">
         <div
           role="log"
           aria-label="Chat messages"

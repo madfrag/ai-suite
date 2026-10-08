@@ -15,6 +15,7 @@ A collection of AI-powered tools built with Next.js 16, React 19, and TypeScript
 - Streaming responses via the OpenAI Responses API
 - Persistent chat history stored in Supabase, scoped per anonymous user via RLS
 - Multiple chat sessions, with a "New Chat" button and a previous-sessions list that lazy-loads only when you open it (no fetching your entire history up front)
+- Private mode: a switch on the chat page keeps the conversation in browser memory only. The client sends the (capped) conversation with each request and the server skips every Supabase read/write for it (the per-IP rate-limit counter still applies)
 - Long sessions get compressed automatically: past a message threshold, older messages are folded into a rolling summary (stored in Supabase, refreshed periodically) instead of resending the full history on every turn
 - Anonymous user identification, no sign-up required
 - Per-IP daily message limit, to keep hosting costs bounded on a public demo

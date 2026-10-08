@@ -57,7 +57,8 @@ export default function ConsentGate({ children }: { children: React.ReactNode })
             </li>
             <li>
               Chats and saved summaries are stored in the EU until you ask for deletion. An
-              anonymous session cookie links them to your browser.
+              anonymous session cookie links them to your browser. Turn on private mode in the chat
+              to keep a conversation out of storage.
             </li>
             <li>Please don&apos;t enter sensitive or personal data.</li>
           </ul>

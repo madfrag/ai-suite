@@ -1,8 +1,36 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const GITHUB_URL = 'https://github.com/madfrag/ai-suite';
 
+function LegalNav() {
+  return (
+    <nav aria-label="Legal" className="flex items-center gap-4 text-xs normal-case tracking-normal">
+      <Link href="/impressum" className="hover:text-foreground hover:underline transition">
+        Impressum
+      </Link>
+      <span aria-hidden="true">·</span>
+      <Link href="/datenschutz" className="hover:text-foreground hover:underline transition">
+        Datenschutz
+      </Link>
+    </nav>
+  );
+}
+
 export default function Footer() {
+  // The chat page is a fixed-height app view (only the message list scrolls),
+  // so it gets a slim footer. Its height (h-10) must match the 2.5rem that
+  // ChatUI subtracts from 100dvh.
+  if (usePathname().startsWith('/chatbot')) {
+    return (
+      <footer className="h-10 shrink-0 border-t border-border flex items-center justify-center text-muted-foreground">
+        <LegalNav />
+      </footer>
+    );
+  }
+
   return (
     <footer className="border-t border-border py-6 flex flex-col items-center gap-3 text-center text-sm text-muted-foreground uppercase tracking-wide">
       <a
@@ -19,18 +47,7 @@ export default function Footer() {
       <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
         &copy; 2026 Rushan Engalychev
       </a>
-      <nav
-        aria-label="Legal"
-        className="flex items-center gap-4 text-xs normal-case tracking-normal"
-      >
-        <Link href="/impressum" className="hover:text-foreground hover:underline transition">
-          Impressum
-        </Link>
-        <span aria-hidden="true">·</span>
-        <Link href="/datenschutz" className="hover:text-foreground hover:underline transition">
-          Datenschutz
-        </Link>
-      </nav>
+      <LegalNav />
     </footer>
   );
 }

@@ -120,4 +120,66 @@ test.describe('chatbot flow', () => {
     await expect(page).not.toHaveURL(firstUrl);
     await expect(page).toHaveURL(/\/chatbot\/[0-9a-f-]{36}$/);
   });
+
+  test('private mode hides history and sends the conversation without a session id', async ({
+    page,
+  }) => {
+    let sentBody: Record<string, unknown> | null = null;
+    await page.route('**/api/chat/send', (route) => {
+      sentBody = route.request().postDataJSON();
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/x-ndjson',
+        body: [
+          JSON.stringify({ type: 'response.output_text.delta', delta: 'Secret reply' }),
+          JSON.stringify({ type: 'response.completed' }),
+        ].join('\n'),
+      });
+    });
+
+    await page.goto('/chatbot');
+    await expect(page.getByText('Previous Chat Sessions')).toBeVisible();
+
+    await page.getByRole('switch', { name: 'Private mode' }).click();
+    await expect(page.getByText('Previous Chat Sessions')).toBeHidden();
+    await expect(page.getByRole('note').filter({ hasText: 'nothing is saved' })).toBeVisible();
+
+    await page.getByLabel('Message', { exact: true }).fill('Hi privately');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('Secret reply')).toBeVisible();
+
+    expect(sentBody).toEqual({
+      private: true,
+      messages: [{ role: 'user', content: 'Hi privately' }],
+    });
+  });
+
+  test('only the message list scrolls, not the page', async ({ page }) => {
+    await page.route('**/api/chat/history*', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          messages: Array.from({ length: 40 }, (_, i) => ({
+            role: i % 2 ? 'assistant' : 'user',
+            content: `Message number ${i} with some filler text`,
+          })),
+        }),
+      })
+    );
+
+    await page.goto('/chatbot');
+    const log = page.getByRole('log', { name: 'Chat messages' });
+    await expect(log.getByText('Message number 39')).toBeVisible();
+
+    const { pageOverflow, logOverflow } = await page.evaluate(() => ({
+      pageOverflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+      logOverflow: (() => {
+        const el = document.querySelector('[role="log"]')!;
+        return el.scrollHeight - el.clientHeight;
+      })(),
+    }));
+    expect(pageOverflow).toBeLessThanOrEqual(0);
+    expect(logOverflow).toBeGreaterThan(0);
+  });
 });

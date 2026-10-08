@@ -155,6 +155,13 @@ export default function DatenschutzPage() {
                   auf die jeweilige anonyme Sitzungs-ID beschränkt. Rechtsgrundlage: Art. 6 Abs. 1
                   lit. b DSGVO.
                 </p>
+                <p className="text-muted-foreground leading-relaxed mt-2">
+                  Im „Privatmodus“ des Chatbots werden Ihre Nachrichten und die Antworten nicht in
+                  der Datenbank gespeichert; der Gesprächsverlauf verbleibt nur im Arbeitsspeicher
+                  Ihres Browsers und geht beim Neuladen oder Verlassen der Seite verloren. Der Text
+                  wird weiterhin zur Beantwortung an den KI-Anbieter übermittelt (siehe Punkt d);
+                  die IP-basierte Ratenbegrenzung (siehe Punkt a) gilt auch im Privatmodus.
+                </p>
               </div>
 
               <div>
@@ -366,6 +373,13 @@ export default function DatenschutzPage() {
                   are stored in a Supabase database hosted in the EU (Ireland). Access is restricted
                   by row-level security to the respective anonymous session ID. Legal basis: Art. 6
                   (1) (b) GDPR.
+                </p>
+                <p className="text-muted-foreground leading-relaxed mt-2">
+                  In the chatbot&apos;s &quot;private mode&quot;, your messages and the replies are
+                  not stored in the database; the conversation only stays in your browser&apos;s
+                  memory and is lost when you reload or leave the page. The text is still
+                  transmitted to the AI provider to generate the reply (see item d), and IP-based
+                  rate limiting (see item a) also applies in private mode.
                 </p>
               </div>
 
