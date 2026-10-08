@@ -142,11 +142,17 @@ test.describe('chatbot flow', () => {
 
     await page.getByRole('switch', { name: 'Private mode' }).click();
     await expect(page.getByText('Previous Chat Sessions')).toBeHidden();
-    await expect(page.getByRole('note').filter({ hasText: 'nothing is saved' })).toBeVisible();
+    await expect(page.getByText('Private chat. Nothing is saved.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Clear chat' })).toBeVisible();
 
     await page.getByLabel('Message', { exact: true }).fill('Hi privately');
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Secret reply')).toBeVisible();
+    await expect(page.getByText('Private chat. Nothing is saved.')).toBeHidden();
+
+    await page.getByRole('button', { name: 'Clear chat' }).click();
+    await expect(page.getByText('Secret reply')).toBeHidden();
+    await expect(page.getByText('Private chat. Nothing is saved.')).toBeVisible();
 
     expect(sentBody).toEqual({
       private: true,

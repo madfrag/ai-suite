@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@radix-ui/react-accordion';
-import { ChevronDown, ChevronUp, Copy, Check, Plus, Lock } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, Check, Plus, Lock, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 type Message = {
@@ -178,6 +178,14 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
     setIsStreaming(false);
   };
 
+  // Warn before a reload/close throws away an unsaved private conversation.
+  useEffect(() => {
+    if (!isPrivate || messages.length === 0) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isPrivate, messages.length]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -189,7 +197,14 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
       className="max-w-4xl mx-auto pb-4 pt-16 px-4 h-[calc(100dvh-2.5rem)] min-h-96 flex-none flex flex-col text-foreground bg-background w-full outline-none"
     >
       <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
-        <h1 className="text-3xl font-bold uppercase">AI Chatbot</h1>
+        <h1 className="text-3xl font-bold uppercase flex items-center gap-3">
+          AI Chatbot
+          {isPrivate && (
+            <span className="flex items-center gap-1.5 text-base font-medium text-muted-foreground">
+              <Lock className="w-4 h-4" aria-hidden="true" />· Private
+            </span>
+          )}
+        </h1>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Switch
@@ -208,22 +223,17 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
             }
             className="flex items-center gap-1.5 border border-border text-foreground px-4 py-2 rounded uppercase text-sm tracking-wide hover:bg-muted transition"
           >
-            <Plus className="w-4 h-4" aria-hidden="true" />
-            New Chat
+            {isPrivate ? (
+              <Trash2 className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <Plus className="w-4 h-4" aria-hidden="true" />
+            )}
+            {isPrivate ? 'Clear chat' : 'New Chat'}
           </button>
         </div>
       </div>
 
-      {isPrivate ? (
-        <p
-          role="note"
-          className="mb-6 flex items-center gap-2 border border-border rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground"
-        >
-          <Lock className="w-4 h-4 shrink-0" aria-hidden="true" />
-          Private mode: nothing is saved. This chat disappears when you reload, leave the page or
-          turn private mode off.
-        </p>
-      ) : (
+      {!isPrivate && (
         <Accordion
           type="single"
           collapsible
@@ -261,13 +271,35 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
         </Accordion>
       )}
 
-      <div className="flex-1 min-h-0 overflow-hidden flex flex-col border border-border rounded-lg bg-card text-card-foreground shadow relative w-full">
+      <div
+        className={`flex-1 min-h-0 overflow-hidden flex flex-col border rounded-lg text-card-foreground shadow relative w-full transition-colors duration-300 ${
+          isPrivate
+            ? 'border-dashed border-muted-foreground/60 bg-muted/50'
+            : 'border-border bg-card'
+        }`}
+      >
         <div
           role="log"
           aria-label="Chat messages"
           aria-live="polite"
           className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col"
         >
+          {isPrivate && messages.length === 0 && (
+            <div
+              role="note"
+              className="m-auto max-w-sm text-center flex flex-col items-center gap-2 text-muted-foreground"
+            >
+              <Lock className="w-8 h-8" aria-hidden="true" />
+              <p className="text-lg font-semibold text-foreground">
+                Private chat. Nothing is saved.
+              </p>
+              <p className="text-sm">
+                This conversation lives only in your browser&apos;s memory and disappears when you
+                reload, leave the page or turn private mode off. Your messages are still sent to
+                OpenAI to generate replies.
+              </p>
+            </div>
+          )}
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -302,7 +334,13 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
               </div>
               {/* Fade active only while the last assistant message is streaming */}
               {msg.role === 'assistant' && isStreaming && idx === messages.length - 1 && (
-                <div className="absolute bottom-0 left-0 right-0 h-10 bg-[linear-gradient(to_bottom,transparent,var(--card))] rounded-b-md pointer-events-none" />
+                <div
+                  className={`absolute bottom-0 left-0 right-0 h-10 rounded-b-md pointer-events-none ${
+                    isPrivate
+                      ? 'bg-[linear-gradient(to_bottom,transparent,color-mix(in_oklab,var(--muted)_50%,var(--background)))]'
+                      : 'bg-[linear-gradient(to_bottom,transparent,var(--card))]'
+                  }`}
+                />
               )}
             </div>
           ))}
@@ -340,7 +378,11 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
           <div ref={bottomRef} />
         </div>
 
-        <div className="border-t border-border p-4 flex items-center gap-2 bg-card sticky bottom-0 left-0 right-0 z-10 w-full">
+        <div
+          className={`border-t p-4 flex items-center gap-2 sticky bottom-0 left-0 right-0 z-10 w-full ${
+            isPrivate ? 'border-dashed border-muted-foreground/60' : 'border-border bg-card'
+          }`}
+        >
           <label htmlFor="chat-message-input" className="sr-only">
             Message
           </label>
@@ -350,7 +392,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleSend()}
-            placeholder="Type your message..."
+            placeholder={isPrivate ? 'Message privately…' : 'Type your message...'}
             disabled={loading}
           />
           <button

@@ -139,3 +139,23 @@ function formatViolations(violations: import('axe-core').Result[]): string {
     })
     .join('\n\n');
 }
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`chat private mode has no WCAG 2.1 AA violations — ${theme} theme`, async ({
+    page,
+    context,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('ai-suite-consent', JSON.stringify({ v: 1 }));
+    });
+    if (theme === 'dark') {
+      await context.addCookies([{ name: 'theme', value: 'dark', url: 'http://localhost:3000' }]);
+    }
+    await page.goto('/chatbot', { waitUntil: 'networkidle' });
+    await page.getByRole('switch', { name: 'Private mode' }).click();
+    await expect(page.getByText('Private chat. Nothing is saved.')).toBeVisible();
+
+    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+    expect(results.violations, formatViolations(results.violations)).toEqual([]);
+  });
+}
