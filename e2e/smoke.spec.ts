@@ -140,7 +140,9 @@ test.describe('chatbot flow', () => {
     await page.goto('/chatbot');
     await expect(page.getByText('Previous Chat Sessions')).toBeVisible();
 
+    const sessionUrl = page.url();
     await page.getByRole('switch', { name: 'Private mode' }).click();
+    await expect(page).toHaveURL(/\/chatbot$/);
     await expect(page.getByText('Previous Chat Sessions')).toBeHidden();
     await expect(page.getByText('Private chat. Nothing is saved.')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Clear chat' })).toBeVisible();
@@ -158,6 +160,11 @@ test.describe('chatbot flow', () => {
       private: true,
       messages: [{ role: 'user', content: 'Hi privately' }],
     });
+
+    // Leaving private mode restores the original session URL
+    await page.getByRole('switch', { name: 'Private mode' }).click();
+    await expect(page).toHaveURL(sessionUrl);
+    await expect(page.getByText('Previous Chat Sessions')).toBeVisible();
   });
 
   test('only the message list scrolls, not the page', async ({ page }) => {

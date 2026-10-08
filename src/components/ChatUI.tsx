@@ -30,8 +30,12 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
 
   // The [[...chatSessionId]] page always redirects server-side to a session
   // URL before this component ever mounts (see app/chatbot/.../page.tsx), so
-  // this is guaranteed to be present here.
-  const chatSessionId = (params?.chatSessionId as string[])[0];
+  // this is guaranteed to be present on mount. Private mode then swaps the
+  // URL to a bare /chatbot (no session id), so the id is mirrored into state
+  // to survive that and to restore the URL when private mode is turned off.
+  const urlSessionId = (params?.chatSessionId as string[] | undefined)?.[0];
+  const [chatSessionId, setChatSessionId] = useState(urlSessionId as string);
+  if (urlSessionId && urlSessionId !== chatSessionId) setChatSessionId(urlSessionId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,6 +51,13 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
   // Private mode keeps the conversation in this component's state only: no
   // history fetch, and /api/chat/send is told not to touch the database.
   const [isPrivate, setIsPrivate] = useState(false);
+
+  // replaceState (not router.replace) so nothing re-renders from the server:
+  // Next syncs native history calls into usePathname/useParams on its own.
+  const handlePrivateChange = (checked: boolean) => {
+    window.history.replaceState(null, '', checked ? '/chatbot' : `/chatbot/${chatSessionId}`);
+    setIsPrivate(checked);
+  };
 
   const handleCopy = (content: string, idx: number) => {
     navigator.clipboard.writeText(content);
@@ -210,7 +221,7 @@ export default function ChatUI({ dailyLimit }: { dailyLimit: number }) {
             <Switch
               id="private-mode"
               checked={isPrivate}
-              onCheckedChange={setIsPrivate}
+              onCheckedChange={handlePrivateChange}
               disabled={loading || isStreaming}
             />
             <label htmlFor="private-mode" className="text-sm cursor-pointer select-none">
