@@ -70,7 +70,7 @@ jobs:
           HUGGINGFACE_API_KEY: ci-placeholder
           SUPABASE_URL: https://example.supabase.co
           SUPABASE_PUBLISHABLE_KEY: ci-placeholder
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         # Always publish, not just on failure — this is the WCAG 2.1 AA
         # conformance report (per-page axe results), which is worth having
         # as evidence even when every check passes.
@@ -118,7 +118,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build-storybook
       - run: npm run test:visual
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: visual-regression-diffs
